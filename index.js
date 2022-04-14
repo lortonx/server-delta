@@ -15,6 +15,8 @@ if (!databaseUri) {
   console.log('> DATABASE_URI not specified, falling back to localhost.');
 }
 const config = {
+	// logLevel: 'info',
+	silent: true,
 	// allowOrigin:'*',
 	// allowClientClassCreation: false,
 	appName: 'Delta Backend',
@@ -22,7 +24,7 @@ const config = {
 	// directAccess: true,
 	cloud: process.env.CLOUD_CODE_MAIN || './cloud/main.js',
 	appId: 'myAppId',
-	masterKey:  'myMasterKey', //Add your master key here. Keep it secret!
+	masterKey:  process.env.MASTER_KEY || 'myMasterKey', //Add your master key here. Keep it secret!
 	serverURL: process.env.SERVER_URL, // Don't forget to change to https if needed
 	liveQuery: {
 		classNames: ['Posts', 'Comments', 'GameScore','MonitorRestrictionRules'], // List of classes to support for query subscriptions

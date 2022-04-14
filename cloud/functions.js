@@ -14,6 +14,8 @@ Parse.Cloud.beforeSave('Test', () => {
 });
 
 
+
+
 Parse.Cloud.define("GoogleSignIn", async (request) => {
   const google = require("googleapis").google;
   // Google's OAuth2 client
@@ -197,3 +199,45 @@ const onNewUser = (/** @type {Parse.Cloud.AfterSaveRequest}*/ data) => {
 const onDeleteUser = (/** @type {Parse.Cloud.AfterSaveRequest}*/ req,res) => {
   
 }
+
+// Защита от записи
+// Parse.Cloud.beforeSave(Parse.User, (req) => {
+//   if (!req.master && req.object.op(‘adminMode’)) throw ‘Error!’
+// });
+
+// Query.eachBatch
+
+
+// Агрегация 
+// Parse.masterKey = ''
+// const pipeline = [
+//   { project: { name: 1 } }
+// ];
+// const query = new Parse.Query('aguser');
+// await query.aggregate(pipeline, { useMasterKey: true })
+
+
+// Parse.masterKey = ''
+// const pipeline = [
+//   // { project: { name: 1 } }
+//     {group: { objectId: '$countryCode' }}
+// ];
+// const query = new Parse.Query('aguser');
+// await query.aggregate(pipeline, { useMasterKey: true })
+
+// Parse.masterKey = ''
+// const pipeline = [
+//     {$match: { countryCode: 'UA' }},
+//     {$project: { level: 1 }}
+    // {$project: { 0: '$objectId' }}
+
+// ];
+// const query = new Parse.Query('aguser');
+// await query.aggregate(pipeline, { useMasterKey: true })
+
+
+//   Все кто ру и проецировать левел
+// const pipeline = [
+//   {$match: { countryCode: {$in: ['RU']} }},
+//   {$project: { 0: '$objectId', level: '$level' }}
+// ];

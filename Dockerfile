@@ -1,4 +1,5 @@
-FROM node:latest
+# FROM node:latest
+FROM node:16-alpine3.11
 
 RUN mkdir parse
 
