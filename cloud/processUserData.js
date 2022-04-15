@@ -40,7 +40,7 @@ Parse.Cloud.define('processUserData', async req => {
         usersToUpdate.add(users[key].guid)
     }
     // Проверяем наличие ID в базе
-    Parse.masterKey = 'myMasterKey'
+    Parse.masterKey = process.env.MASTER_KEY
 
     const alreadyInDatabaseUsers = await (new Parse.Query('aguser')).aggregate([
         {$match: { objectId: {$in: allUserIds} }},
