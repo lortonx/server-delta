@@ -88,8 +88,8 @@ var dashboard = new ParseDashboard({
 	],
 	"users": [
 		{
-		  "user":process.env.DASHBOARS_USER,
-		  "pass":process.env.DASHBOARDS_PASS
+		  "user":process.env.DASHBOARD_USER,
+		  "pass":process.env.DASHBOARD_PASS
 		},
 	],
 	"trustProxy": 1,
