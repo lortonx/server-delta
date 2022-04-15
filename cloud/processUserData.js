@@ -1,5 +1,5 @@
 const cloudConfig = require('./config.js');
-const AGUSER = 'agusers';
+const AGUSER = 'aguser';
 Parse.Cloud.define('cloudConfig', req => {
     return cloudConfig;
 });
