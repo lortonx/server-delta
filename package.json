@@ -8,15 +8,6 @@
     "url": "https://github.com/ParsePlatform/parse-server-example"
   },
   "license": "MIT",
-  "dependencies": {
-    "dotenv": "^16.0.0",
-    "express": "4.17.1",
-    "googleapis": "^100.0.0",
-    "kerberos": "^2.0.0",
-    "node-fetch": "^2.6.7",
-    "parse": "^3.4.1",
-    "parse-server": "^5.2.0"
-  },
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon --inspect index.js",
@@ -25,8 +16,17 @@
     "test": "mongodb-runner start && jasmine",
     "coverage": "nyc jasmine",
     "prettier": "prettier --write '{cloud,spec}/{**/*,*}.js' 'index.js'",
-    "watch": "babel-watch index.js",
-    "dashboard": "parse-dashboard --dev --appId myAppId --masterKey myMasterKey --serverURL \"http://localhost:1337/parse\""
+    "watch": "babel-watch index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "express": "4.17.1",
+    "googleapis": "^100.0.0",
+    "kerberos": "^2.0.0",
+    "node-fetch": "^2.6.7",
+    "parse": "^3.4.1",
+    "parse-dashboard": "^4.1.0",
+    "parse-server": "^5.2.0"
   },
   "engines": {
     "node": ">=4.3"

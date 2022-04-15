@@ -3,6 +3,7 @@
 require('dotenv').config();
 const express = require('express');
 const ParseServer = require('parse-server').ParseServer;
+const ParseDashboard = require('parse-dashboard');
 const path = require('path');
 const args = process.argv || [];
 const test = args.some(arg => arg.includes('jasmine'));
@@ -74,6 +75,28 @@ if (!test) {
   // This will enable the Live Query real-time server
   ParseServer.createLiveQueryServer(httpServer);
 }
+
+
+var dashboard = new ParseDashboard({
+	"apps": [
+		{
+			"serverURL": config.serverURL,
+			"appId": config.appId,
+			"masterKey": config.masterKey,
+			"appName": config.appName
+		}
+	],
+	"users": [
+		{
+		  "user":process.env.DASHBOARS_USER,
+		  "pass":process.env.DASHBOARDS_PASS
+		},
+	],
+	"trustProxy": 1,
+	allowInsecureHTTP: false
+});
+  app.use('/dashboard', dashboard);
+
 
 module.exports = {
   app,
