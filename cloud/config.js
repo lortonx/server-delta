@@ -1,3 +1,3 @@
 module.exports = {
-    processUserDataInterval: 1*12*60*60*1000,
+    processUserDataInterval: 1*1*60*60*1000,
 }
