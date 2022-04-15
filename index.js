@@ -17,9 +17,10 @@ if (!databaseUri) {
 }
 const config = {
 	// logLevel: 'info',
-	silent: true,
+	// silent: true,
 	// allowOrigin:'*',
 	// allowClientClassCreation: false,
+	logLevel: "error",
 	appName: 'Delta Backend',
 	databaseURI:  databaseUri ,
 	// directAccess: true,

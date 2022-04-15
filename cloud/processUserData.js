@@ -1,10 +1,11 @@
 const cloudConfig = require('./config.js');
+const AGUSER = 'AhuelUser';
 Parse.Cloud.define('cloudConfig', req => {
     return cloudConfig;
 });
 
 class AGUser extends Parse.Object {constructor(id){
-    super('aguser',{
+    super(AGUSER,{
         countryCode: 'US',
         displayName: '',
         // lvl: 0,
@@ -29,8 +30,8 @@ class AGUser extends Parse.Object {constructor(id){
 
 }}
 Parse.Cloud.define('processUserData', async req => {
-    const users = req.params
 
+    const users = req.params
     const allUserIds = []
     const usersToCreate = new Set()
     const usersToUpdate = new Set()
@@ -39,27 +40,46 @@ Parse.Cloud.define('processUserData', async req => {
         usersToCreate.add(users[key].guid)
         usersToUpdate.add(users[key].guid)
     }
+    // console.log('step 0', allUserIds, usersToCreate, usersToUpdate)
     // Проверяем наличие ID в базе
     Parse.masterKey = process.env.MASTER_KEY
-
-    const alreadyInDatabaseUsers = await (new Parse.Query('aguser')).aggregate([
+    const alreadyInDatabaseUsers = await (new Parse.Query(AGUSER)).aggregate([
         {$match: { objectId: {$in: allUserIds} }},
         {$project: { 0: '$objectId'}}
     ], { useMasterKey: true })
-    // Найти ID которых нету в бд
+    // Формирование массива для создания
     for(let {objectId} of alreadyInDatabaseUsers) usersToCreate.delete(objectId)
-    // Найти ID которые могут быть обновлены
-    for(let guid of usersToCreate) usersToUpdate.delete(guid) // удалить из обновления тех кто будет создан
-    const alreadyInDatabaseUsers_old = await (new Parse.Query('aguser')).aggregate([
-        {$match: {
-            objectId: {$in: Array.from(usersToUpdate)},
-            updatedAt: { 
-                $gte: new Date(0), // start
-                $lt: new Date((new Date()).getTime() - cloudConfig.processUserDataInterval /*1*12*60*60*1000*/) // end
-            }
-        }},
-        {$project: { 0: '$objectId'}}
-    ], { useMasterKey: true })
+    // Формирование массива для обновления
+    for(let guid of usersToCreate) usersToUpdate.delete(guid)
+
+    const outdatedRecords = new Set()
+    if(users.length > 1){
+        const possibleToUpdate = await (new Parse.Query(AGUSER)).aggregate([
+            {$match: {
+                objectId: {$in: Array.from(usersToUpdate)},
+                updatedAt: { 
+                    $gte:new Date(0), // start
+                    $lt: new Date((new Date()).getTime() - cloudConfig.processUserDataInterval /*1*12*60*60*1000*/) // end
+                }
+            }},
+            {$project: { 0: '$objectId'}}
+        ], { useMasterKey: true })
+        for(let {objectId} of possibleToUpdate) outdatedRecords.add(objectId)
+    }else{
+        const possibleToUpdate = await (new Parse.Query(AGUSER)).aggregate([
+            {$match: {
+                objectId: {$in: Array.from(usersToUpdate)},
+                updatedAt: { 
+                    $gte:new Date(0), // start
+                    $lt: new Date((new Date()).getTime() - 1*60*60*1000) // end
+                }
+            }},
+            {$project: { 0: '$objectId'}}
+        ], { useMasterKey: true })
+        for(let {objectId} of possibleToUpdate) outdatedRecords.add(objectId)
+        // for(let guid of usersToUpdate) outdatedRecords.add(guid)
+    }
+    // console.log('step 1',{/*possibleToUpdate, */usersToUpdate, outdatedRecords})
 
     {  // CREATE OBJECTS
         const batchedObjects = []
@@ -72,9 +92,10 @@ Parse.Cloud.define('processUserData', async req => {
         // console.log('Будет создано', batchedObjects.length, 'объектов')
         await Parse.Object.saveAll(batchedObjects)
     }
+
     {  // UPDATE OBJECTS
-        const findArray = Object.keys(alreadyInDatabaseUsers_old).map(key => alreadyInDatabaseUsers_old[key].objectId)
-        const query = new Parse.Query('aguser')
+        const findArray = Array.from(outdatedRecords)
+        const query = new Parse.Query(AGUSER)
             .limit(1000)
             .skip(0)
             .containedIn('objectId', findArray);
@@ -88,7 +109,7 @@ Parse.Cloud.define('processUserData', async req => {
     }
 
 });
-Parse.Cloud.beforeSave('aguser', (req) => {
+Parse.Cloud.beforeSave(AGUSER, (req) => {
     // console.log(req.object)
     req.object.set('objectId', req.object.attributes.guid)
     req.object.set('accountBirthDate', new Date(new Date() -  req.object.attributes.accountAge*1000))
