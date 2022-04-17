@@ -74,7 +74,7 @@ Parse.Cloud.define("GoogleToken", async (request) => {
         picture: usr_info.data.picture,
       };
       return authData;
-
+ 
   }
 });
 
