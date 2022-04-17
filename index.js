@@ -18,7 +18,7 @@ if (!databaseUri) {
 const config = {
 	// logLevel: 'info',
 	// silent: true,
-	// allowOrigin:'*',
+	allowOrigin:'*',
 	// allowClientClassCreation: false,
 	logLevel: "error",
 	appName: 'Delta Backend',
