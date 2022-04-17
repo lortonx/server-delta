@@ -1,5 +1,5 @@
 const { default: fetch } = require("node-fetch");
-
+console.log('Parse Server running on port 050');
 Parse.Cloud.define('hello', req => {
   req.log.info(req);
   return 'Hi';
