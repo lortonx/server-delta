@@ -1,3 +1,5 @@
+const { default: fetch } = require("node-fetch");
+
 Parse.Cloud.define('hello', req => {
   req.log.info(req);
   return 'Hi';
@@ -38,17 +40,15 @@ Parse.Cloud.define("GoogleSignIn", async (request) => {
   return loginLink;
 });
 
-Parse.Cloud.define("GoogleToken", async (request) => {
+Parse.Cloud.define("GoogleToken", async (request) => { 
   const google = require("googleapis").google;
-
   // Google's OAuth2 client
   const OAuth2 = google.auth.OAuth2;
-
   // Create an OAuth2 client object from the credentials in our config file
   const oauth2Client = new OAuth2(
     process.env.client_id,
     process.env.client_secret,
-    process.env.redirect_uris
+    request.params.redirect || process.env.redirect_uris
   );
 
   if (request.error) {
@@ -69,20 +69,18 @@ Parse.Cloud.define("GoogleToken", async (request) => {
         email: usr_info.data.email,
         name: usr_info.data.name,
         id_token: tokens.id_token,
-        access_token: tokens.id_token,
+        access_token: tokens.access_token,
+        code: request.params.code,
         picture: usr_info.data.picture,
       };
-      
       return authData;
-    // } catch (error) {
-    //   return error;
-    // }
+
   }
 });
 
 Parse.Cloud.beforeLogin((data) => {
   // работает со второго раза
-  console.log(data.object.isNew(),data.object)
+  // console.log(data.object.isNew(),data.object)
   // data.object.set("secretData", 'secretdated');
   // data.object.save({},{ useMasterKey: true })
   // headers
@@ -96,12 +94,36 @@ Parse.Cloud.afterLogin(()=>{
   console.log('after login',Parse.User.current())
 })
 
-Parse.Cloud.beforeSave('_User', function(data) {
+Parse.Cloud.beforeSave('_User', async function(data) {
+	const user = data.object
   // не работет
-  console.log("BEFORE NEW SAVED ACCOUNT 0",data.object.isNew(), data.object);
-  if(data.object.isNew()){ // is new user
-    console.log("BEFORE NEW SAVED ACCOUNT",data.object.isNew(), data.object);
-    data.object.attributes.authData
+	console.log("BEFORE NEW SAVED ACCOUNT 0",data.object.isNew(), data.object);
+	if(data.object.isNew()){ // is new user
+		console.log("BEFORE NEW SAVED ACCOUNT 1",data.object.isNew(), data.object, data.object.attributes.authData);
+		if(data.object.attributes.authData && data.object.attributes.authData.google && data.object.attributes.authData.google.id_token){
+			
+			const req = await fetch('https://www.googleapis.com/oauth2/v3/tokeninfo?id_token='+ data.object.attributes.authData.google.id_token)
+			/** @type {sub: string, email: string, name: string, given_name: string, family_name: string, locale: string, picture: string, verified_email: boolean} */
+			const res = await req.json()
+
+			Parse.masterKey = process.env.MASTER_KEY
+			const alreadyInDatabase = await (new Parse.Query('_User')).aggregate([
+                { $match: { username: {$regex: `^${res.name}_` } }},
+				{ $group: { _id: null, total: { $sum: 1 } } },
+                { $project: { _id: 0 } }
+			], { useMasterKey: true })
+			const login_counter = alreadyInDatabase[0]?.total||'0'
+
+			user.set('username', res.given_name + '_' + login_counter);
+			user.set('first_name', res.given_name);
+			user.set('last_name', res.family_name);
+			user.set('email', res.email);
+			user.set('picture', res.picture);
+		}
+
+
+
+
   }
   //create admin role
   // var adminRoleACL = new Parse.ACL();
@@ -122,7 +144,20 @@ Parse.Cloud.afterSave('_User',async (data)=>{
   const isNewUser = data.object.createdAt == data.object.updatedAt
   const user = data.object
   if(isNewUser){ // is new user
-    console.log('isnewuser 2',isNewUser)
+    console.log('After Save new _User',isNewUser,user)
+	// if(data.object.attributes.authData && data.object.attributes.authData.google && data.object.attributes.authData.google.id_token){
+	// 	const req = await fetch('https://www.googleapis.com/oauth2/v3/tokeninfo?id_token='+ data.object.attributes.authData.google.id_token)
+	// 	/** @type {sub: string, email: string, name: string, given_name: string, family_name: string, locale: string, picture: string, verified_email: boolean} */
+	// 	const res = await req.json()
+	// 	console.log('After Save new _User id_token',res)
+	// 	user.set('username', res.name);
+	// 	user.set('email', res.email);
+	// 	user.set('picture', res.picture);
+	// 	await user.save();
+
+	// 	// https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=ya29.A0ARrdaM_ZD7xWmPdTBeefJDKLAYmqHNfdpbJS_ZiLWUktC6b6PU1BCs6dBL5te2t22T8IWXo3FyddCJJem3HE5q-kshqKqjIYQCGZalFoYg9NTyUV9ivwFdzguvboIulbRUpJPUoj7C7Ni4j1OwfB9F0D5EyF
+	// }
+	
 
     {// Какие роли у пользователя
       const q = new Parse.Query(Parse.Role)

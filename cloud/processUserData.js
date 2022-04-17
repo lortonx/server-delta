@@ -10,7 +10,7 @@ class AGUser extends Parse.Object {constructor(id){
         displayName: '',
         // lvl: 0,
         accountAge: 0,
-        accountBithDate: new Date(),
+        accountBirthDate: new Date(),
         paying: false,
         potions: 0,
         skins: 0,
