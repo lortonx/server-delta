@@ -1,82 +1,20 @@
 const { default: fetch } = require("node-fetch");
-console.log('Parse Server running on port 050');
+// const Parse = require("parse/lib/browser/Parse");
+
 Parse.Cloud.define('hello', req => {
   req.log.info(req);
   return 'Hi';
-});
-
+})
 Parse.Cloud.define('asyncFunction', async req => {
   await new Promise(resolve => setTimeout(resolve, 1000));
   req.log.info(req);
   return 'Hi async';
-});
-
+})
 Parse.Cloud.beforeSave('Test', () => {
   throw new Parse.Error(9001, 'Saving test objects is not available.');
-});
+})
 
 
-
-
-Parse.Cloud.define("GoogleSignIn", async (request) => {
-  const google = require("googleapis").google;
-  // Google's OAuth2 client
-  const OAuth2 = google.auth.OAuth2;
-
-  // Create an OAuth2 client object from the credentials in our config file
-  const oauth2Client = new OAuth2(
-    process.env.client_id,
-    process.env.client_secret,
-    process.env.redirect_uris
-  );
-  // Obtain the google login link to which we'll send our users to give us access
-  const loginLink = oauth2Client.generateAuthUrl({
-    // Indicates that we need to be able to access data continously without the user constantly giving us consent
-    access_type: "offline",
-    // Using the access scopes from our config file
-    scope: ["email", "openid", "profile"],
-    state: request.params,
-  });
-  return loginLink;
-});
-
-Parse.Cloud.define("GoogleToken", async (request) => { 
-  const google = require("googleapis").google;
-  // Google's OAuth2 client
-  const OAuth2 = google.auth.OAuth2;
-  // Create an OAuth2 client object from the credentials in our config file
-  const oauth2Client = new OAuth2(
-    process.env.client_id,
-    process.env.client_secret,
-    request.params.redirect || process.env.redirect_uris
-  );
-
-  if (request.error) {
-    // The user did not give us permission.
-    return request.error;
-  } else {
-    // try {
-      const { tokens } = await oauth2Client.getToken(request.params.code);
-      oauth2Client.setCredentials(tokens);
-      var oauth2 = google.oauth2({
-        auth: oauth2Client,
-        version: "v2",
-      });
-      const usr_info = await oauth2.userinfo.get();
-      // Auth data for Parse
-      const authData = {
-        id: usr_info.data.id,
-        email: usr_info.data.email,
-        name: usr_info.data.name,
-        id_token: tokens.id_token,
-        access_token: tokens.access_token,
-        code: request.params.code,
-        picture: usr_info.data.picture,
-      };
-      return authData;
- 
-  }
-});
 
 Parse.Cloud.beforeLogin((data) => {
   // работает со второго раза
@@ -89,84 +27,66 @@ Parse.Cloud.beforeLogin((data) => {
   // ip
   return
 })
-
 Parse.Cloud.afterLogin(()=>{
-  console.log('after login',Parse.User.current())
+  console.log('after login', Parse.User.current())
 })
 
 Parse.Cloud.beforeSave('_User', async function(data) {
 	const user = data.object
   // не работет
-	console.log("BEFORE NEW SAVED ACCOUNT 0",data.object.isNew(), data.object);
+	// console.log("BEFORE SAVED ACCOUNT 0",data.object.isNew(), data);
 	if(data.object.isNew()){ // is new user
-		console.log("BEFORE NEW SAVED ACCOUNT 1",data.object.isNew(), data.object, data.object.attributes.authData);
 		if(data.object.attributes.authData && data.object.attributes.authData.google && data.object.attributes.authData.google.id_token){
-			
+			/* Захват информации с гугла при первой авторизации */
 			const req = await fetch('https://www.googleapis.com/oauth2/v3/tokeninfo?id_token='+ data.object.attributes.authData.google.id_token)
 			/** @type {sub: string, email: string, name: string, given_name: string, family_name: string, locale: string, picture: string, verified_email: boolean} */
 			const res = await req.json()
 
 			Parse.masterKey = process.env.MASTER_KEY
 			const alreadyInDatabase = await (new Parse.Query('_User')).aggregate([
-                { $match: { username: {$regex: `^${res.name}_` } }},
+        { $match: { username: {$regex: `^${res.name}_` } }},
 				{ $group: { _id: null, total: { $sum: 1 } } },
-                { $project: { _id: 0 } }
-			], { useMasterKey: true })
-			const login_counter = alreadyInDatabase[0]?.total||'0'
-
-			user.set('username', res.given_name + '_' + login_counter);
+        { $project: { _id: 0 } }
+			],{ useMasterKey: true })
+			const login_counter = alreadyInDatabase[0]?.total|| 0
+			user.set('username', res.given_name + '_' + (login_counter+1));
 			user.set('first_name', res.given_name);
 			user.set('last_name', res.family_name);
 			user.set('email', res.email);
 			user.set('picture', res.picture);
+
+      // const ACL = user.getACL()
+      // ACL.setRoleReadAccess('UserEditor',true)
+      // ACL.setRoleWriteAccess('UserEditor',true)
 		}
 
-
-
-
   }
-  //create admin role
-  // var adminRoleACL = new Parse.ACL();
-  // adminRoleACL.setPublicReadAccess(false);
-  // adminRoleACL.setPublicWriteAccess(false);
-  // var adminRole = new Parse.Role(accountName + "_Administrator", adminRoleACL);
-  // adminRole.save();
+  // console.log(data.object)
 
-  // //create user role
-  // var userRoleACL = new Parse.ACL();
-  // userRoleACL.setPublicReadAccess(false);
-  // userRoleACL.setPublicWriteAccess(false);
-  // var userRole = new Parse.Role(accountName + "_User", userRoleACL);
-  // userRole.save();
 });
 
 Parse.Cloud.afterSave('_User',async (data)=>{
   const isNewUser = data.object.createdAt == data.object.updatedAt
   const user = data.object
+  if(data.object.existed()){
+    // console.log('data.object.existed()',data)
+  }
   if(isNewUser){ // is new user
-    console.log('After Save new _User',isNewUser,user)
-	// if(data.object.attributes.authData && data.object.attributes.authData.google && data.object.attributes.authData.google.id_token){
-	// 	const req = await fetch('https://www.googleapis.com/oauth2/v3/tokeninfo?id_token='+ data.object.attributes.authData.google.id_token)
-	// 	/** @type {sub: string, email: string, name: string, given_name: string, family_name: string, locale: string, picture: string, verified_email: boolean} */
-	// 	const res = await req.json()
-	// 	console.log('After Save new _User id_token',res)
-	// 	user.set('username', res.name);
-	// 	user.set('email', res.email);
-	// 	user.set('picture', res.picture);
-	// 	await user.save();
+    
+    /**
+     * После сохранения нового пользователя
+     * Создать сопутствующие данные
+     */
+    console.log('After Save new _User',isNewUser,data)
 
-	// 	// https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=ya29.A0ARrdaM_ZD7xWmPdTBeefJDKLAYmqHNfdpbJS_ZiLWUktC6b6PU1BCs6dBL5te2t22T8IWXo3FyddCJJem3HE5q-kshqKqjIYQCGZalFoYg9NTyUV9ivwFdzguvboIulbRUpJPUoj7C7Ni4j1OwfB9F0D5EyF
-	// }
-	
-
-    {// Какие роли у пользователя
-      const q = new Parse.Query(Parse.Role)
-      q.equalTo('name','UsersAdmin')
-      const role = await q.first()
-      if(!role) throw new Parse.Error(9001, 'Cant set ACL for new user. Role not found');
-      role.getUsers().add(data.object)
-      await role.save()
-    }
+    // {// Какие роли у пользователя
+    //   const q = new Parse.Query(Parse.Role)
+    //   q.equalTo('name', 'UsersAdmin')
+    //   const role = await q.first()
+    //   if(!role) throw new Parse.Error(9001, 'Cant set ACL for new user. Role not found');
+    //   role.getUsers().add(data.object)
+    //   await role.save()
+    // }
     
     // {// Какая роль может модифицировать объект?
     //   const q = new Parse.Query(Parse.Role)
@@ -188,26 +108,43 @@ Parse.Cloud.afterSave('_User',async (data)=>{
     // var role = new Parse.Role("UsersAdmin", roleAcl);
     // role.save()
 
-    {
-      class Wallet extends Parse.Object {className = "Wallet"}
-      const wallet = new Wallet();
+    // {
+    //   class Wallet extends Parse.Object {className = "Wallet"}
+    //   const wallet = new Wallet();
 
-      const acl = new Parse.ACL()
-      acl.setPublicWriteAccess(false)
-      acl.setReadAccess(user, true)
-      acl.setWriteAccess(user, true)
+    //   const acl = new Parse.ACL()
+    //   acl.setPublicWriteAccess(false)
+    //   acl.setReadAccess(user, true)
+    //   acl.setWriteAccess(user, true)
 
-      wallet.setACL(acl)
-      wallet.set('owner', user)
-      wallet.save({
-        ownerId: user.id,
-        coins: 0,
-        gems: 0,
-      })
-    }
+    //   wallet.setACL(acl)
+    //   wallet.set('owner', user)
+    //   wallet.save({
+    //     ownerId: user.id,
+    //     coins: 0,
+    //     gems: 0,
+    //   })
+    // }
 
 
     data.object.attributes.authData
+  }
+
+
+  const ACL_TARGET = new Parse.ACL({
+    [user.id]: {"read": true,"write": true}, // сам себя может читать и писать
+    "*": {"read": true},  // все могут читать
+    "role:UserEditor": {"read": true,"write": true} // UserEditor может читать и писать
+  })
+  const ACL_USER = user.getACL() || new Parse.ACL()
+  for(const KEY in ACL_TARGET.permissionsById){
+    if(ACL_TARGET.getReadAccess(KEY) != ACL_USER.getReadAccess(KEY) || ACL_TARGET.getWriteAccess(KEY) != ACL_USER.getWriteAccess(KEY)){
+      Object.assign(ACL_USER.permissionsById, ACL_TARGET.permissionsById)
+      user.setACL(ACL_USER.permissionsById)
+      user.save(null, {useMasterKey: true})
+      console.log('Fixed ACL for user',user.id,user.get('username'))
+      break;
+    }
   }
 })
 
@@ -217,6 +154,18 @@ Parse.Cloud.beforeSave('MonitorRestrictionRules', (req, res) =>{
     // req.object.save()
 });
 
+Parse.Cloud.afterFind('Wallet', async (req, res) =>{
+  for(const object of req.objects){
+    object.attributes.updatedAt.toJSON = () => undefined
+    object.attributes.createdAt.toJSON = () => undefined
+  }
+})
+Parse.Cloud.afterFind('Product', async (req, res) =>{
+  for(const object of req.objects){
+    object.attributes.updatedAt.toJSON = () => undefined
+    object.attributes.createdAt.toJSON = () => undefined
+  }
+})
 
 const DbStats = async (name = '_User', direction = true)=>{
   class DbStats extends Parse.Object {className = "DbStats"}
