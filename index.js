@@ -29,7 +29,7 @@ const config = {
 	masterKey:  process.env.MASTER_KEY || 'myMasterKey', //Add your master key here. Keep it secret!
 	serverURL: process.env.SERVER_URL, // Don't forget to change to https if needed
 	liveQuery: {
-		classNames: ['Posts', 'Comments', 'GameScore','MonitorRestrictionRules'], // List of classes to support for query subscriptions
+		classNames: ['Posts', 'Comments', 'GameScore','MonitorRestrictionRules','Product'], // List of classes to support for query subscriptions
 	},
 	auth: {
 		// "google": {
@@ -78,7 +78,7 @@ if (!test) {
 }
 
 
-var dashboard = new ParseDashboard({
+const dashboard_config = {
 	"apps": [
 		{
 			"serverURL": config.serverURL,
@@ -87,16 +87,19 @@ var dashboard = new ParseDashboard({
 			"appName": config.appName
 		}
 	],
-	"users": [
+	"trustProxy": 1,
+	allowInsecureHTTP: false
+}
+if(process.env.DASHBOARD_USER){
+	dashboard_config["users"] = [
 		{
 		  "user":process.env.DASHBOARD_USER,
 		  "pass":process.env.DASHBOARD_PASS
-		},
-	],
-	"trustProxy": 1,
-	allowInsecureHTTP: false
-});
-  app.use('/dashboard', dashboard);
+		}
+	]
+}
+var dashboard = new ParseDashboard(dashboard_config);
+app.use('/dashboard', dashboard);
 
 
 module.exports = {
@@ -104,6 +107,9 @@ module.exports = {
   config,
 };
 
+
+const Wallet = require('./Models/Wallet.js')
+const Product = require('./Models/Product.js')
 // Пример отправки POST запроса:
 
 // async function postData(url = '', data = {}) {

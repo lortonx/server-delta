@@ -27,7 +27,6 @@ class AGUser extends Parse.Object {constructor(id){
         totalMass: 0,
         cellsEaten: 0,
     })
-
 }}
 Parse.Cloud.define('processUserData', async req => {
 
