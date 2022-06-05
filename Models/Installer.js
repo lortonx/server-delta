@@ -1,4 +1,12 @@
-const Parse = require('parse/node');
+const Cart = require('./Cart.js')
+const CartItem = require('./CartItem.js')
+const Product = require('./Product.js')
+const Wallet = require('./Wallet.js')
+const Plan = require('./Plan.js')
+
+const Subscription = require('./Subscription.js')
+const UserSubscription = require('./UserSubscription.js')
+
 // @ts-check
 class Installer {
     constructor(){

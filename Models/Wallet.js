@@ -1,5 +1,5 @@
+// Кошелек пользователя
 // @ts-check
-const Parse = require('parse/node');
 const params = {
     /**@type {import("./Product.js")} */
     product: null,
@@ -25,10 +25,8 @@ module.exports = Wallet;
 
 const Schema = new Parse.Schema('Wallet');
 Schema.get().then(()=>{
-    console.log('Schema Wallet is already created', Schema)
 }).catch(() => {
     Schema.addNumber('amount')
-    // Schema.addString('product')
     Schema.addPointer('user', '_User')
     Schema.addPointer('product', 'Product')
     

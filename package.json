@@ -19,14 +19,18 @@
     "watch": "babel-watch index.js"
   },
   "dependencies": {
+    "axios": "^0.27.2",
+    "crypto-js": "^4.1.1",
     "dotenv": "^16.0.0",
     "express": "4.17.1",
     "googleapis": "^100.0.0",
+    "graphql-tag": "^2.12.6",
     "kerberos": "^2.0.0",
     "node-fetch": "^2.6.7",
-    "parse": "^3.4.1",
-    "parse-dashboard": "^4.1.0",
-    "parse-server": "^5.2.0"
+    "overshom-wayforpay": "^1.1.0",
+    "parse": "^3.4.2",
+    "parse-dashboard": "^4.1.1",
+    "parse-server": "^5.2.1"
   },
   "engines": {
     "node": ">=4.3"

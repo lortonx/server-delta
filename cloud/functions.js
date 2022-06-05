@@ -79,54 +79,6 @@ Parse.Cloud.afterSave('_User',async (data)=>{
      */
     console.log('After Save new _User',isNewUser,data)
 
-    // {// Какие роли у пользователя
-    //   const q = new Parse.Query(Parse.Role)
-    //   q.equalTo('name', 'UsersAdmin')
-    //   const role = await q.first()
-    //   if(!role) throw new Parse.Error(9001, 'Cant set ACL for new user. Role not found');
-    //   role.getUsers().add(data.object)
-    //   await role.save()
-    // }
-    
-    // {// Какая роль может модифицировать объект?
-    //   const q = new Parse.Query(Parse.Role)
-    //   q.equalTo('name','UsersAdmin')
-    //   const role = await q.first()
-    //   if(!role) throw new Parse.Error(9001, 'Cant set ACL for new user. Role not found');
-    //   /**@type {Parse.User}*/
-    //   const user = data.object
-    //   const acl = user.getACL()
-    //   acl.setRoleReadAccess(role,true)
-    //   acl.setRoleWriteAccess(role,true)
-    //   user.save({},{useMasterKey: true})
-    // }
-
-    // Создание роли
-    // var roleAcl = new Parse.ACL();
-    // roleAcl.setPublicReadAccess(true);
-    // roleAcl.setPublicWriteAccess(true)
-    // var role = new Parse.Role("UsersAdmin", roleAcl);
-    // role.save()
-
-    // {
-    //   class Wallet extends Parse.Object {className = "Wallet"}
-    //   const wallet = new Wallet();
-
-    //   const acl = new Parse.ACL()
-    //   acl.setPublicWriteAccess(false)
-    //   acl.setReadAccess(user, true)
-    //   acl.setWriteAccess(user, true)
-
-    //   wallet.setACL(acl)
-    //   wallet.set('owner', user)
-    //   wallet.save({
-    //     ownerId: user.id,
-    //     coins: 0,
-    //     gems: 0,
-    //   })
-    // }
-
-
     data.object.attributes.authData
   }
 

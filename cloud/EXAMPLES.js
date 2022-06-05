@@ -5,7 +5,7 @@ const role = await new Parse.Query('_Role').equalTo('name','UserEditor').first()
 // role.getUsers().add()
 function updateAllRows(skip) {
 
-  var query = new Parse.Query(Parse.User);
+  let query = new Parse.Query(Parse.User);
   query.limit(1);
   query.skip(skip);
   query.find().then(function(results) {
@@ -30,5 +30,5 @@ function updateAllRows(skip) {
   }, function(error) {
     // error occured while trying to fetch data 
   });
-};
+}
 updateAllRows(0)

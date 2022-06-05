@@ -1,0 +1,4 @@
+      extend type Query {
+        hello: String! @resolve
+        hello2: String! @resolve(to: "hello")
+      }

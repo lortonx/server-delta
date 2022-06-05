@@ -1,28 +1,9 @@
-// @ts-check
-const Parse = require('parse/node');
+// Корзина пользователя
 const params = {
-    /**@type {import("./Product.js")} */
-    product: null,
-    amount: 0,
-    /**@type {Cart} */
-    cart: null,
-    /**@type {Date} */
-    createdAt: null,
-    /**@type {Date} */
-    updatedAt: null,
-}
-// @ts-ignore
-class CartItem extends Parse.Object {
-    constructor() {
-        super('CartItem', Object.assign({},params));
-        /** @type {params} */
-        this.attributes
-    }
-}
-
-const params2 = {
     /**@type {Parse.User} */
     customer: null,
+    /**@type {import("./CartItem.js")} */
+    cartItems: null,
     status: '',
     /**@type {Date} */
     createdAt: null,
@@ -32,18 +13,19 @@ const params2 = {
 // @ts-ignore
 class Cart extends Parse.Object {
     constructor() {
-        super('Cart', Object.assign({},params2));
+        super('Cart', Object.assign({},params));
         /** @type {params} */
         this.attributes
     }
 }
 
-module.exports = {CartItem, Cart};
+module.exports = Cart
 
-// const Schema = new Parse.Schema('Product');
-// Schema.get().catch(() => {
-//     Schema.addString('productId')
-//     Schema.addNumber('type')
-//     Schema.addNumber('price')
-//     Schema.save()
-// })
+const Schema = new Parse.Schema('Cart');
+Schema.get().catch(() => {
+    Schema.addPointer('customer', '_User')
+    Schema.addRelation('cartItems', 'CartItem')
+    Schema.addString('status')
+    Schema.addNumber('price')
+    Schema.save()
+})

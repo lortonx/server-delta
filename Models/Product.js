@@ -1,5 +1,5 @@
+// Продукт
 // @ts-check
-const Parse = require('parse/node');
 const params = {
     productId: 'noname',
     type: 0,
@@ -23,6 +23,9 @@ module.exports = Product;
 const Schema = new Parse.Schema('Product');
 Schema.get().catch(() => {
     Schema.addString('productId')
+    // Schema.addIndex('productId_', {
+    //     'productId': 'String'
+    // })
     Schema.addNumber('type')
     Schema.addNumber('price')
     Schema.save()
