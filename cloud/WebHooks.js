@@ -6,4 +6,6 @@ Parse.Cloud.define('BmcHook', async req => {
     
     console.log('BmcHook', event)
 },{
+    requireUser: false,
+    requireMaster: false
 })
