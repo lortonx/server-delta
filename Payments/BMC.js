@@ -12,7 +12,10 @@ class BMC {
     constructor(access_token) {
         this.access_token = access_token;
     }
-
+    /**
+     * 
+     * @param {number} page 
+     */
     Supporters(page) {
         const params = new URLSearchParams({
             page: page
@@ -21,7 +24,6 @@ class BMC {
     }
     /**
      * @param {"active"|"inactive"|"all"} status 
-     * @returns 
      */
     Subscriptions(status = 'all', page = 1) {
         const params = new URLSearchParams({
@@ -43,6 +45,11 @@ class BMC {
         if(supporterId == undefined) throw new Error('Argument "supporterId" is required')
         return this._sendRequest(`supporters/${supporterId}`);
     }
+    /**
+     * 
+     * @param {*} path 
+     * @returns {Promise<BmcSupportersPage>}
+     */
     _sendRequest(path, params = '') {
         const url = `https://developers.buymeacoffee.com/api/v1/${path}?${params}`;
         // const url = `https://httpbin.org/headers?${path}?${params}`;
@@ -61,4 +68,53 @@ class BMC {
     }
 }
  
- module.exports = BMC;
+module.exports = BMC;
+
+/**
+    @typedef {Object} BmcHookEvent
+    @property {string} supporter_email ex "example@email.com"
+    @property {string} number_of_coffees ex "1"
+    @property {string} total_amount ex "3"
+    @property {string} support_created_on ex "2022-06-04T17:47:04.000000Z"
+ */
+
+/**
+    @typedef BmcSupportersPage
+    @property {number} current_page page of the result set
+    @property {BmcSupport[]} data
+    @property {string} first_page_url ex "https://developers.buymeacoffee.com/api/v1/supporters?page=1"
+    @property {number} from ex 6
+    @property {number} last_page ex 11
+    @property {string} last_page_url ex "https://developers.buymeacoffee.com/api/v1/supporters?page=11"
+    @property {string} next_page_url ex "https://developers.buymeacoffee.com/api/v1/supporters?page=3"
+    @property {string} path ex "https://developers.buymeacoffee.com/api/v1/supporters"
+    @property {number} per_page ex 5
+    @property {string} prev_page_url: "https://developers.buymeacoffee.com/api/v1/supporters?page=1"
+    @property {number} to ex 10
+    @property {number} total ex 53
+ */
+
+
+/**
+    @typedef BmcSupport
+    @property {string} country Country code (2 letters)
+    @property {null|*} is_refunded null
+    @property {null|*} order_payload: null
+    @property {string} payer_email emal
+    @property {string} payer_name: "Alex Io"
+    @property {string} payment_platform ex "stripe"
+    @property {null|*} referer  null
+    @property {string} support_coffee_price ex "0.0000"
+    @property {number} support_coffees ex 5
+    @property {string} support_created_on: "2022-05-14 10:29:48"
+    @property {string} support_currency ex "EUR"
+    @property {string} support_email
+    @property {0|1} support_hidden
+    @property {number} support_id
+    @property {string} support_note Message from the supporter
+    @property {string} support_updated_on ex "2022-05-14 10:29:48"
+    @property {0|1} support_visibility
+    @property {string} supporter_name ex "Alex Io"
+    @property {string} transaction_id
+    @property {null|*} transfer_id
+ */

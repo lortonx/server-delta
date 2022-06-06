@@ -16,15 +16,16 @@ Parse.Cloud.define('useBmcSupport', async req => {
     const requestId = req.functionName + req.user.id
     let all = [];
     let last_page = 1;
-    let max_page = 10;
+    let max_page = 20;
     for( let current_page = 1; current_page <= last_page; current_page++ ) {
         if( current_page > max_page ) break;
-        const supporters = await coffee.Supporters(current_page)
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const {data: supporters} = await coffee.Supporters(current_page)
+        console.log(supporters.current_page, supporters)
         if(!supporters) throw new Error('Cant get supporters')
         last_page = supporters.last_page
         all = all.concat(supporters.data)
     }
-    // const status = all.find(entry => entry.transaction_id == req.params.transaction_id)
     return {
         // status: status,
         data: all
@@ -32,9 +33,7 @@ Parse.Cloud.define('useBmcSupport', async req => {
 
 },{
     requireUser: true,
-    fields: {
-        transaction_id: true
-    }
+    // fields : ['objectId'],
 })
 
 // coffee.Supporters().then(data => console.log('Supporters',data));
