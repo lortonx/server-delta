@@ -44,8 +44,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.post('/webhook/BmcHook/' ,(req)=>{
 	/** @type {import("./Payments/BMC.js").BmcHookEvent} */
-    const event = req.body
-    console.log('BmcHook', event)
+    const body = req.body
+	const data = body.response
+    console.log('BmcHook', req)
 })
 
 app.use('/', express.static(path.join(__dirname, '/public')));

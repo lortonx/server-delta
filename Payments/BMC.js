@@ -72,10 +72,12 @@ module.exports = BMC;
 
 /**
     @typedef {Object} BmcHookEvent
-    @property {string} supporter_email ex "example@email.com"
-    @property {string} number_of_coffees ex "1"
-    @property {string} total_amount ex "3"
-    @property {string} support_created_on ex "2022-06-04T17:47:04.000000Z"
+    @property {Object} response
+    @property {string=} response.supporter_name ex "name"
+    @property {string} response.supporter_email ex "example@email.com"
+    @property {string} response.number_of_coffees ex "1"
+    @property {string} response.total_amount ex "3"
+    @property {string} response.support_created_on ex "2022-06-04T17:47:04.000000Z"
  */
 
 /**
