@@ -52,7 +52,7 @@ app.post('/webhook/BmcHook/' ,(req)=>{
 	const signature = req.headers['x-bmc-signature']
 	const hash = cryptoJs.HmacSHA256(
 		JSON.stringify(data),
-		process.env.BMC_TOKEN
+		process.env.BMC_SECRET
 	).toString()
 	if(hash !== signature){
 		console.log('BmcHook', 'Invalid signature')
