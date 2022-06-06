@@ -9,6 +9,7 @@ const express = require('express');
 const { default: ParseServer, ParseGraphQLServer }  = require('parse-server')
 const ParseDashboard = require('parse-dashboard');
 const path = require('path');
+const cryptoJs = require('crypto-js');
 const args = process.argv || [];
 const test = args.some(arg => arg.includes('jasmine'));
 
@@ -47,6 +48,16 @@ app.post('/webhook/BmcHook/' ,(req)=>{
     const body = req.body
 	const data = body.response
     console.log('BmcHook', req)
+
+	const signature = req.headers['x-bmc-signature']
+	const hash = cryptoJs.HmacSHA256(
+		JSON.stringify(data),
+		process.env.BMC_TOKEN
+	).toString()
+	if(hash !== signature){
+		console.log('BmcHook', 'Invalid signature')
+		return
+	}
 })
 
 app.use('/', express.static(path.join(__dirname, '/public')));
