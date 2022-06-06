@@ -2,6 +2,8 @@
 // compatible API routes.
 require('dotenv').config();
 const gql = require('graphql-tag');
+const cors = require('cors');
+const bodyParser = require('body-parser')
 const fs = require('fs');
 const express = require('express');
 const { default: ParseServer, ParseGraphQLServer }  = require('parse-server')
@@ -37,6 +39,14 @@ const config = {
 
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+app.post('/webhook/BmcHook/' ,(req)=>{
+	/** @type {import("./Payments/BMC.js").BmcHookEvent} */
+    const event = req.body
+    console.log('BmcHook', event)
+})
 
 app.use('/', express.static(path.join(__dirname, '/public')));
 
@@ -69,6 +79,17 @@ app.get('/test', function (req, res) {
 });
 
 
+// Parse.Cloud.define('BmcHook', async req => {
+//     /** @type {import("../Payments/BMC.js").BmcHookEvent} */
+//     const event = req.params
+//     // req.headers['x-bmc-event'] == 'coffee-purchase'
+//     console.log(req)
+    
+//     console.log('BmcHook', event)
+// },{
+//     requireUser: false,
+//     requireMaster: false,
+// })
 
 const port = process.env.PORT || 1337;
 // if (!test) {
