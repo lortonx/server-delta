@@ -49,9 +49,10 @@ app.post('/webhook/BmcHook/' ,(req)=>{
 	const data = body.response
     console.log('BmcHook', req)
 
+	// coffee-link-purchase coffee-purchase
 	const signature = req.headers['x-bmc-signature']
 	const hash = cryptoJs.HmacSHA256(
-		JSON.stringify(data),
+		JSON.stringify(body),
 		process.env.BMC_SECRET
 	).toString()
 	if(hash !== signature){
