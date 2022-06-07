@@ -56,7 +56,7 @@ app.post('/webhook/BmcHook/' ,(req)=>{
 		process.env.BMC_SECRET
 	).toString()
 	if(signature !== header_signature){
-		console.log('BmcHook', 'Invalid signature')
+		console.log('BmcHook', 'Invalid signature',signature,'!==',header_signature, req.rawBody.toString())
 		return
 	}
 })
