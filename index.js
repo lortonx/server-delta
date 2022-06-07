@@ -40,7 +40,7 @@ const config = {
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json( { verify: ( req, res, buffer ) => { req.rawBody = buffer; } } ));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.post('/webhook/BmcHook/' ,(req)=>{
@@ -50,12 +50,12 @@ app.post('/webhook/BmcHook/' ,(req)=>{
     console.log('BmcHook', req)
 
 	// coffee-link-purchase coffee-purchase
-	const signature = req.headers['x-bmc-signature']
-	const hash = cryptoJs.HmacSHA256(
-		JSON.stringify(body),
+	const header_signature = req.headers['x-bmc-signature']
+	const signature = cryptoJs.HmacSHA256(
+		req.rawBody,
 		process.env.BMC_SECRET
 	).toString()
-	if(hash !== signature){
+	if(signature !== header_signature){
 		console.log('BmcHook', 'Invalid signature')
 		return
 	}
