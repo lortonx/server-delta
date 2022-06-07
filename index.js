@@ -10,6 +10,7 @@ const { default: ParseServer, ParseGraphQLServer }  = require('parse-server')
 const ParseDashboard = require('parse-dashboard');
 const path = require('path');
 const cryptoJs = require('crypto-js');
+const BMC = require('./Payments/BMC.js');
 const args = process.argv || [];
 const test = args.some(arg => arg.includes('jasmine'));
 
@@ -43,22 +44,19 @@ const app = express();
 app.use(express.json( { verify: ( req, res, buffer ) => { req.rawBody = buffer; } } ));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.post('/webhook/BmcHook/' ,(req)=>{
-	/** @type {import("./Payments/BMC.js").BmcHookEvent} */
-    const body = req.body
-	const data = body.response
-    console.log('BmcHook', req)
-
-	// coffee-link-purchase coffee-purchase
+app.post('/webhook/BmcHook/' ,(req, res)=>{
+	const BMC_WEBHOOK_SECRET = process.env.BMC_SECRET
 	const header_signature = req.headers['x-bmc-signature']
-	const signature = cryptoJs.HmacSHA256(
-		req.rawBody,
-		process.env.BMC_SECRET
-	).toString()
-	if(signature !== header_signature){
-		console.log('BmcHook', 'Invalid signature',signature,'!==',header_signature, req.rawBody.toString())
-		return
+	if(!BMC.verifyWebhook(req.rawBody.toString(), header_signature, BMC_WEBHOOK_SECRET)){
+		return res.sendStatus( 401 )
 	}
+	res.sendStatus( 200 );
+
+	/** @type {import("./Payments/BMC.js").BmcHookEvent} */
+	/** @type {BmcHookEvent} */
+	const body = req.body
+	const data = body.response
+	console.log('APP WEBHOOKED BY BMC', data)
 })
 
 app.use('/', express.static(path.join(__dirname, '/public')));

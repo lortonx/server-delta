@@ -16,7 +16,8 @@
     "test": "mongodb-runner start && jasmine",
     "coverage": "nyc jasmine",
     "prettier": "prettier --write '{cloud,spec}/{**/*,*}.js' 'index.js'",
-    "watch": "babel-watch index.js"
+    "watch": "babel-watch index.js",
+    "tunnel": "ssh -R 80:localhost:1337 nokey@localhost.run"
   },
   "dependencies": {
     "axios": "^0.27.2",

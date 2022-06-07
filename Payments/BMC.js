@@ -1,3 +1,5 @@
+const cryptoJs = require('crypto-js');
+
 /**
  * Buy Me A Coffee JS | Main File
  * by Waren Gonzaga
@@ -66,11 +68,26 @@ class BMC {
             .catch(err => reject(err))
         })
     }
+    /**
+     * 
+     * @param {string} bodyString received post data
+     * @param {string} header_signature received header signature
+     * @param {string} BMC_WEBHOOK_SECRET  webhook secret from bmc
+     * @returns {boolean}
+     */
+    static verifyWebhook(bodyString, header_signature, BMC_WEBHOOK_SECRET) {
+        const signature = cryptoJs.HmacSHA256(
+            bodyString,
+            BMC_WEBHOOK_SECRET
+        ).toString()
+        return signature === header_signature;
+    }
 }
  
 module.exports = BMC;
 
 /**
+    @memberof window
     @typedef {Object} BmcHookEvent
     @property {Object} response
     @property {string=} response.supporter_name ex "name"
