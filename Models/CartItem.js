@@ -1,9 +1,9 @@
 // Объект в корзине
 // @ts-check
 const params = {
-    /**@type {import("./Product.js")} */
+    /**@type {import("./Product")} */
     product: null,
-    /**@type {import("./Cart.js")} */
+    /**@type {import("./Cart")} */
     cart:null,
     amount: 0,
     /**@type {Date} */
@@ -11,16 +11,15 @@ const params = {
     /**@type {Date} */
     updatedAt: null,
 }
-// @ts-ignore
-class CartItem extends Parse.Object {
+/**
+ * @extends {Parse.Object<params>}
+ */
+
+const CartItem = class CartItem extends Parse.Object {
     constructor() {
         super('CartItem', Object.assign({},params));
-        /** @type {params} */
-        this.attributes
     }
 }
-
-module.exports = CartItem;
 
 const Schema = new Parse.Schema('CartItem');
 Schema.get().catch(() => {
@@ -29,3 +28,5 @@ Schema.get().catch(() => {
     Schema.addNumber('amount')
     Schema.save()
 })
+
+module.exports = CartItem;

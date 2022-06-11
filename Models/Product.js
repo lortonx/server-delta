@@ -9,7 +9,9 @@ const params = {
     /**@type {Date} */
     updatedAt: null,
 }
-// @ts-ignore
+/**
+ * @extends {Parse.Object<params>}
+ */
 class Product extends Parse.Object {
     constructor() {
         super('Product', Object.assign({},params));
@@ -23,9 +25,6 @@ module.exports = Product;
 const Schema = new Parse.Schema('Product');
 Schema.get().catch(() => {
     Schema.addString('productId')
-    // Schema.addIndex('productId_', {
-    //     'productId': 'String'
-    // })
     Schema.addNumber('type')
     Schema.addNumber('price')
     Schema.save()

@@ -16,7 +16,9 @@ const params = {
     /**@type {Date} */ startedAt: null,
     /**@type {Date} */ expirationAt: null,
 }
-// @ts-ignore
+/**
+ * @extends {Parse.Object<params>}
+ */
 class UserSubscription extends Parse.Object {
     constructor() {
         super('UserSubscription', Object.assign({},params));
@@ -37,6 +39,14 @@ class UserSubscription extends Parse.Object {
         record.set('sp', subscription)
         return record
     }
+    // static getActualUserSubscriptions(user) {
+    //     if(!user) throw new Error('User param must be set')
+    //     return new Parse.Query('UserSubscription')
+    //         .equalTo('user', user)
+    //         .equalTo('status', 'active')
+    //         .include('sp')
+    //         .find()
+    // }
     activate() {
         if(this.get('status') == 'active') throw new Error('Subscription "status" already "active"')
         this.set('status', 'active')

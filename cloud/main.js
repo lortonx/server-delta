@@ -1,4 +1,4 @@
-require('./WebHooks.js');
+// require('./WebHooks.js');
 require('../Models/Installer.js')
 require('./Wallet.js');
 require('./auth.js');

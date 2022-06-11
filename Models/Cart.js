@@ -10,7 +10,9 @@ const params = {
     /**@type {Date} */
     updatedAt: null,
 }
-// @ts-ignore
+/**
+ * @extends {Parse.Object<params>}
+ */
 class Cart extends Parse.Object {
     constructor() {
         super('Cart', Object.assign({},params));

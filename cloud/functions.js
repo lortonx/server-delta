@@ -44,7 +44,7 @@ Parse.Cloud.beforeSave('_User', async function(data) {
 
 			Parse.masterKey = process.env.MASTER_KEY
 			const alreadyInDatabase = await (new Parse.Query('_User')).aggregate([
-        { $match: { username: {$regex: `^${res.name}_` } }},
+        { $match: { username: {$regex: `^${res.given_name}_` } }},
 				{ $group: { _id: null, total: { $sum: 1 } } },
         { $project: { _id: 0 } }
 			],{ useMasterKey: true })

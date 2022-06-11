@@ -1,4 +1,7 @@
 // План использования продукта
+
+const UserSubscription = require("./UserSubscription")
+
 // @ts-check
 const params = {
     // /**@type {import("./Product.js")} */
@@ -22,7 +25,9 @@ const params = {
     /**@type {Date} */
     updatedAt: null,
 }
-// @ts-ignore
+/**
+ * @extends {Parse.Object<params>}
+ */
 class Plan extends Parse.Object {
     /**
      * 
@@ -52,6 +57,27 @@ class Plan extends Parse.Object {
 			plan.start()
             return plan
 		}
+    }
+    /**
+     * @param {Parse.User} user 
+     * @param {string} name 
+     * @returns 
+     */
+    static async getUserPlanByName(user, name) {
+        if(!user) throw new Error('User must be set')
+        if(!name) throw new Error('Name of plan must be set')
+        const plan = new Parse.Query(Plan)
+		.select('name,ds,de,dr,user')
+		.equalTo('user', user)
+        .equalTo('name', name)
+        .first()
+        return await plan
+    }
+    /**
+     * @param {UserSubscription} userSubscription 
+     */
+    renewAccordingSubscription(userSubscription){
+
     }
     constructor() {
         super('Plan')

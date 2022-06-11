@@ -12,15 +12,19 @@ const Wallet = require('../Models/Wallet.js');
 const BMC = require('../Payments/BMC.js');
 const coffee = new BMC(process.env.BMC_TOKEN||'null'); // add your token here
 
+global.BMC = coffee;
+
 Parse.Cloud.define('useBmcSupport', async req => {
     const requestId = req.functionName + req.user.id
     let all = [];
     let last_page = 1;
-    let max_page = 20;
+    let max_page = 2;
     for( let current_page = 1; current_page <= last_page; current_page++ ) {
         if( current_page > max_page ) break;
         await new Promise(resolve => setTimeout(resolve, 1000));
-        const {data: supporters} = await coffee.Supporters(current_page)
+        // const {data: supporters} = await coffee.Subscriptions('all',current_page)
+        // const {data: supporters} = await coffee.Supporters(current_page)
+        const {data: supporters} = await coffee.Extras(current_page)
         console.log(supporters.current_page, supporters)
         if(!supporters) throw new Error('Cant get supporters')
         last_page = supporters.last_page
@@ -35,6 +39,13 @@ Parse.Cloud.define('useBmcSupport', async req => {
     requireUser: true,
     // fields : ['objectId'],
 })
+
+// ;((async () => {
+//     let data
+//     data = await coffee.getSubscriptionById(128616)
+//     console.log(data)
+
+// })())
 
 // coffee.Supporters().then(data => console.log('Supporters',data));
 // coffee.Subscriptions().then(data => console.log('Subscriptions',data));
@@ -171,14 +182,3 @@ Parse.Cloud.afterFind('Plan', async (req, res) =>{
     }
   })
 
-// /**
-//  * @param {Parse.User} user 
-//  * @param {Parse.Object} subscription 
-//  */
-// const addUserSubscription = async (user, subscription) => {
-//     const usersubscription = new UserSubscription();
-//     usersubscription.set('user', user);
-//     usersubscription.set('sp', subscription);
-//     usersubscription.set('status', 'active');
-//     return usersubscription.save();
-// }

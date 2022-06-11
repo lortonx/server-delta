@@ -24,7 +24,8 @@
         "no-await-in-loop" : "off",
         "no-unused-vars": "off",
         "no-mixed-spaces-and-tabs": "off",
-        "no-unreachable":"off"
+        "no-unreachable":"off",
+        "no-async-promise-executor": "off",
     },
     "globals" : {
         "Parse" : true

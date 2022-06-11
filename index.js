@@ -1,80 +1,61 @@
-// Example express application adding the parse-server module to expose Parse
-// compatible API routes.
+// @ts-check
 require('dotenv').config();
 const gql = require('graphql-tag');
 const cors = require('cors');
-const bodyParser = require('body-parser')
 const fs = require('fs');
 const express = require('express');
-const { default: ParseServer, ParseGraphQLServer }  = require('parse-server')
+const {/* default: ParseServer, */ParseGraphQLServer }  = require('parse-server')
+const ParseServer = require('parse-server/lib/ParseServer').default;
 const ParseDashboard = require('parse-dashboard');
 const path = require('path');
-const cryptoJs = require('crypto-js');
 const BMC = require('./Payments/BMC.js');
+const parseServer = require('./ParseServer.js');
 const args = process.argv || [];
 const test = args.some(arg => arg.includes('jasmine'));
 
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-
-const databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
-
-if (!databaseUri) {
-  console.log('> DATABASE_URI not specified, falling back to localhost.');
-}
-const config = {
-	// logLevel: 'info',
-	// silent: true,
-	allowOrigin:'*', 
-	// allowClientClassCreation: false,
-	logLevel: "error",
-	appName: 'Delta Backend',
-	databaseURI:  databaseUri ,
-	// directAccess: true,
-	cloud: process.env.CLOUD_CODE_MAIN || './cloud/main.js',
-	appId: 'myAppId',
-	masterKey:  process.env.MASTER_KEY || 'myMasterKey', //Add your master key here. Keep it secret!
-	serverURL: process.env.SERVER_URL, // Don't forget to change to https if needed
-	liveQuery: {
-		classNames: ['Plan', 'Comments', 'GameScore','MonitorRestrictionRules','Product'], // List of classes to support for query subscriptions
-	},
-};
-
 const app = express();
 
-app.use(express.json( { verify: ( req, res, buffer ) => { req.rawBody = buffer; } } ));
+app.use(express.json( { verify: ( req, res, buffer ) => {
+	// @ts-ignore
+	req.rawBody = buffer
+}}));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+
 app.post('/webhook/BmcHook/' ,(req, res)=>{
 	const BMC_WEBHOOK_SECRET = process.env.BMC_SECRET
+	/** @type {string} */
+	// @ts-ignore
 	const header_signature = req.headers['x-bmc-signature']
-	if(!BMC.verifyWebhook(req.rawBody.toString(), header_signature, BMC_WEBHOOK_SECRET)){
+	/** @type {string} */
+	// @ts-ignore
+	const rawBody = req.rawBody.toString()
+	if(process.env.NODE_ENV !== 'dev' && !BMC.verifyWebhook(rawBody, header_signature, BMC_WEBHOOK_SECRET)){
 		return res.sendStatus( 401 )
 	}
 	res.sendStatus( 200 );
 
 	/** @type {import("./Payments/BMC.js").BmcHookEvent} */
-	/** @type {BmcHookEvent} */
 	const body = req.body
-	const data = body.response
-	console.log('APP WEBHOOKED BY BMC', data)
+	console.log('APP WEBHOOKED BY BMC', body)
+	srv.api.handleBmcEvent(body)
 })
 
 app.use('/', express.static(path.join(__dirname, '/public')));
 
-// Serve the Parse API on the /parse URL prefix
-const mountPath = process.env.PARSE_MOUNT || '/parse';
-// if (!test) {
-const api = new ParseServer(config);
 
+// if (!test) {
+// const api = new ParseServer(config);
+// console.log(api.config.loggerController)
 // }
 
-const parseGraphQLServer = new ParseGraphQLServer(api,{
-		graphQLPath: '/graphql',
-		playgroundPath: '/playground',
-		graphQLCustomTypeDefs: gql`${fs.readFileSync('./cloud/schema.graphql')}`,
-	}
-);
-  app.use(mountPath, api.app);
+// const parseGraphQLServer = new ParseGraphQLServer(parseServer,{
+// 		graphQLPath: '/graphql',
+// 		playgroundPath: '/playground',
+// 		graphQLCustomTypeDefs: gql`${fs.readFileSync('./cloud/schema.graphql')}`,
+// 	}
+// );
+app.use('/parse', parseServer.app);
 
 // parseGraphQLServer.applyGraphQL(app);
 // parseGraphQLServer.applyPlayground(app);
@@ -90,55 +71,50 @@ app.get('/test', function (req, res) {
 });
 
 
-// Parse.Cloud.define('BmcHook', async req => {
-//     /** @type {import("../Payments/BMC.js").BmcHookEvent} */
-//     const event = req.params
-//     // req.headers['x-bmc-event'] == 'coffee-purchase'
-//     console.log(req)
-    
-//     console.log('BmcHook', event)
-// },{
-//     requireUser: false,
-//     requireMaster: false,
-// })
 
-const port = process.env.PORT || 1337;
+
+const PORT = process.env.PORT || 1337;
 // if (!test) {
 const httpServer = require('http').createServer(app);
-httpServer.listen(port, function () {
-	console.log('parse-server-example running on port ' + port + '.');
+httpServer.listen(PORT, function () {
+	console.log('Parse Server running on port ' + PORT + '.');
 });
   // This will enable the Live Query real-time server
 const parseLiveQueryServer = ParseServer.createLiveQueryServer(httpServer);
-console.log(parseLiveQueryServer)
+// console.log(parseLiveQueryServer)
 // }
 
 
 const dashboard_config = {
 	"apps": [
 		{
-			"serverURL": config.serverURL,
-			"appId": config.appId,
-			"masterKey": config.masterKey,
-			"appName": config.appName
+			"serverURL": parseServer.config.serverURL,
+			"appId": parseServer.config.appId,
+			"masterKey": parseServer.config.masterKey,
+			"appName": parseServer.config.appName
 		}
 	],
 	"trustProxy": 1,
-	allowInsecureHTTP: false
+	allowInsecureHTTP: false,
+	get users(){
+		const users = [{
+			  "user":process.env.DASHBOARD_USER,
+			  "pass":process.env.DASHBOARD_PASS
+		}]
+		if(process.env.DASHBOARD_USER) return users
+		return undefined
+	}
 }
-if(process.env.DASHBOARD_USER){
-	dashboard_config["users"] = [
-		{
-		  "user":process.env.DASHBOARD_USER,
-		  "pass":process.env.DASHBOARD_PASS
-		}
-	]
-}
-let dashboard = new ParseDashboard(dashboard_config);
+let dashboard = ParseDashboard(dashboard_config);
 app.use('/dashboard', dashboard);
 
+const srv = {
+	app,
+	api: new (require('./apis/api')),
+}
+global.srv = srv;
 
 module.exports = {
   app,
-  config,
+  config: parseServer.config
 };

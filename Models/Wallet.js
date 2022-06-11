@@ -12,7 +12,9 @@ const params = {
     /**@type {Date} */
     updatedAt: null,
 }
-// @ts-ignore
+/**
+ * @extends {Parse.Object<params>}
+ */
 class Wallet extends Parse.Object {
     constructor() {
         super('Wallet', Object.assign({},params));

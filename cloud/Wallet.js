@@ -57,35 +57,45 @@ class UserWallet {
 			fields : ['name'],
 			requireUser: true
 		})
-	}
-	/**
-	 * @param {Parse.User} param.user
-	 * @param {string} param.productId
-	 * @param {number} param.amount 
-	 */
-	async addProduct({user, productId, amount}) {
-		const product = await new Parse.Query(Product).equalTo('objectId', productId).first()
-		if(!product) throw new Error(`Product ${productId} not found`)
 
-		let productWallet = await new Parse.Query(Wallet)
-			.equalTo('user', user)
-			.equalTo('product', product)
-			.first();
-
-		if(!productWallet) {
-			productWallet = new Wallet()
-			productWallet.set('user', user)
-			productWallet.set('product', product)
-			productWallet.set('amount', 0)
-		}
-		if(productWallet.get('amount') + amount > 0){
-			if(amount > 0) productWallet.increment('amount', amount)
-			else productWallet.decrement('amount', -amount)
-		}else{
-			productWallet.set('amount', 0)
-		}
-		await productWallet.save()
+		Parse.Cloud.define('createUserSubscription', async req => {
+			// if(!req.user) throw new Error('Not authorized')
+			// const requestId = req.functionName + req.user.id
+			return await this.createUserSubscription(req.params.userId, req.params.planId)
+		},{
+			fields : ['userId', 'planId'],
+			requireUser: true,
+			requireAnyUserRoles: ['Administrator']
+		})
 	}
+	// /**
+	//  * @param {Parse.User} param.user
+	//  * @param {string} param.productId
+	//  * @param {number} param.amount 
+	//  */
+	// async addProduct({user, productId, amount}) {
+	// 	const product = await new Parse.Query(Product).equalTo('objectId', productId).first()
+	// 	if(!product) throw new Error(`Product ${productId} not found`)
+
+	// 	let productWallet = await new Parse.Query(Wallet)
+	// 		.equalTo('user', user)
+	// 		.equalTo('product', product)
+	// 		.first();
+
+	// 	if(!productWallet) {
+	// 		productWallet = new Wallet()
+	// 		productWallet.set('user', user)
+	// 		productWallet.set('product', product)
+	// 		productWallet.set('amount', 0)
+	// 	}
+	// 	if(productWallet.get('amount') + amount > 0){
+	// 		if(amount > 0) productWallet.increment('amount', amount)
+	// 		else productWallet.decrement('amount', -amount)
+	// 	}else{
+	// 		productWallet.set('amount', 0)
+	// 	}
+	// 	await productWallet.save()
+	// }
 	/**
 	 * @param {Parse.User} param.user
 	 * @param {string} param.objectId
@@ -150,8 +160,13 @@ class UserWallet {
 			}
 		})
 	}
-	async createPlanRecord(user, name, duration, remaining) {
-		
+	async createUserSubscription(userId, subscriptionId) {
+		const subscription = await new Parse.Query(Subscription).equalTo('objectId', subscriptionId).first({useMasterKey: true})
+		if(!subscription) throw new Error(`Subscription ${subscriptionId} not found`)
+		const user = await new Parse.Query(Parse.User).equalTo('objectId', userId).first({useMasterKey: true})
+		if(!user) throw new Error(`User ${userId} not found`)
+		const userSubscription = UserSubscription.createRecord(user, subscription)
+		return await userSubscription.save({}, {useMasterKey: true})
 	}
 	async usePlan(user, planName) {
 		const availableNames = ['spect1x','spect4x','spect16x']
@@ -162,14 +177,7 @@ class UserWallet {
 		 * Поиск актуальной подписки пользователя
 		 * Активация плана
 		 */
-
-		// A) Запрос наличия плана у пользователя
-		/** @type {Plan} */
-		let plan = await new Parse.Query(Plan)
-			.select('name,ds,de,dr,user')
-			.equalTo('user', user)
-			.equalTo('name', planName)
-			.first()
+		let plan = await Plan.getUserPlanByName(user, planName)
 		if(!plan) {
 			try{
 				plan = Plan.createRecord(user, planName)
@@ -182,8 +190,7 @@ class UserWallet {
 		if(plan.getRemainingLeft() != 0) throw new Error('Remaining is not ready')
 		if(plan.getDurationLeft() != 0) throw new Error('Plan is not expired')
 			
-		// Выбирает актуальные подписки
-		/** @type {UserSubscription} */
+
 		const activeUserSubscription = await new Parse.Query(UserSubscription)
 			.equalTo('user', user)
 			.greaterThanOrEqualTo('de', new Date())

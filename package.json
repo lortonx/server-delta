@@ -10,7 +10,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon --inspect index.js",
+    "dev": "set NODE_ENV=dev&& nodemon --inspect index.js",
     "lint": "eslint --cache ./cloud && eslint --cache index.js && eslint --cache ./spec",
     "lint-fix": "eslint --cache --fix ./cloud && eslint --cache --fix index.js && eslint --cache --fix ./spec",
     "test": "mongodb-runner start && jasmine",
@@ -32,7 +32,8 @@
     "overshom-wayforpay": "^1.1.0",
     "parse": "^3.4.2",
     "parse-dashboard": "^4.1.1",
-    "parse-server": "^5.2.1"
+    "parse-server": "^5.2.1",
+    "tough-cookie": "^4.0.0"
   },
   "engines": {
     "node": ">=4.3"

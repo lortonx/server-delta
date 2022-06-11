@@ -11,7 +11,9 @@ const params = {
     /**@type {Date} */ startedAt: null,
     /**@type {Date} */ expirationAt: null,
 }
-// @ts-ignore
+/**
+ * @extends {Parse.Object<params>}
+ */
 class Subscription extends Parse.Object {
     constructor() {
         super('Subscription', Object.assign({},params));
