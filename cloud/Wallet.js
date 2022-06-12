@@ -187,7 +187,7 @@ class UserWallet {
 			
 		}
 
-		if(plan.getRemainingLeft() != 0) throw new Error(`Remaining is not ready (${plan.getRemainingLeft()/60} min)`)
+		if(plan.getRemainingLeft() != 0) throw new Error(`Remaining is not ready.${plan.getDurationLeft() != 0?' Aslo error request':''}`)
 		if(plan.getDurationLeft() != 0) throw new Error('Plan is not expired')
 			
 
