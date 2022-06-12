@@ -187,7 +187,7 @@ class UserWallet {
 			
 		}
 
-		if(plan.getRemainingLeft() != 0) throw new Error('Remaining is not ready')
+		if(plan.getRemainingLeft() != 0) throw new Error(`Remaining is not ready (${plan.getRemainingLeft()/60} min)`)
 		if(plan.getDurationLeft() != 0) throw new Error('Plan is not expired')
 			
 
@@ -197,7 +197,7 @@ class UserWallet {
 			.include('sp')
 			.first()
 		if(!activeUserSubscription) throw new Error('No active subscriptions')
-
+ 
 		/**@type {Subscription} */
 		const sp = activeUserSubscription.get('sp')
 		if(!sp) throw new Error('No attached sp (Subscription) in UserSubscription')

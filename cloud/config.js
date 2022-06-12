@@ -2,5 +2,8 @@ module.exports = {
     processUserDataInterval: 1*1*60*60*1000,
     get ts(){
         return Date.now()
+    },
+    get date(){
+        return new Date().toISOString()
     }
 }
