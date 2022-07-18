@@ -182,3 +182,9 @@ Parse.Cloud.afterFind('Plan', async (req, res) =>{
     }
   })
 
+
+
+
+//   u = await new Parse.Query('_User').equalTo('objectId','Vl3aagvEnQ').first({useMasterKey: true})
+// role = await new Parse.Query('_Role').equalTo('name','Administrator').first({useMasterKey: true})
+// role.relation('users').add(u).save(null, {useMasterKey: true})

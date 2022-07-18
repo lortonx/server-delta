@@ -13,6 +13,11 @@ const parseServer = require('./ParseServer.js');
 const args = process.argv || [];
 const test = args.some(arg => arg.includes('jasmine'));
 
+
+if(!('SIGNATURE_KEY' in process.env)){
+	throw Error('SIGNATURE_KEY is not defined')
+}
+
 const app = express();
 
 app.use(express.json( { verify: ( req, res, buffer ) => {

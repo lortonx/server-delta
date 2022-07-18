@@ -20,7 +20,7 @@ const config = {
 	masterKey:  process.env.MASTER_KEY || 'myMasterKey', //Add your master key here. Keep it secret!
 	serverURL: process.env.SERVER_URL, // Don't forget to change to https if needed
 	liveQuery: {
-		classNames: ['Plan', 'Comments', 'GameScore','MonitorRestrictionRules','Product'], // List of classes to support for query subscriptions
+		classNames: ['Plan', 'Comments', 'GameScore','MonitorRestrictionRules','Product','UserSubscription'], // List of classes to support for query subscriptions
 	},
 	jsonLogs: false
 };
@@ -28,3 +28,5 @@ const config = {
 const parseServer = new ParseServer(config);
 parseServer.config
 module.exports = parseServer
+
+// /events create -title "@everyopne" -time "in 1 minute" -max 1

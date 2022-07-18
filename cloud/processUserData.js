@@ -30,6 +30,7 @@ class AGUser extends Parse.Object {constructor(id){
 }}
 Parse.Cloud.define('processUserData', async req => {
 
+    return;
     const users = req.params
     const allUserIds = []
     const usersToCreate = new Set()
