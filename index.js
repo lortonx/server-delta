@@ -92,15 +92,16 @@ const config = {
 		classNames: ['Plan', 'Comments', 'GameScore','MonitorRestrictionRules','Product','UserSubscription'], // List of classes to support for query subscriptions
 	},
 	jsonLogs: false,
+	masterKeyIps: ['0.0.0.0/0']
 };
 
 const parseServer =  ParseServer(config);
 
-const parseGraphQLServer = new ParseGraphQLServer(parseServer,{
-	graphQLPath: '/graphql',
-	playgroundPath: '/playground',
-	graphQLCustomTypeDefs: gql`${fs.readFileSync('./cloud/schema.graphql')}`,
-});
+// const parseGraphQLServer = new ParseGraphQLServer(parseServer,{
+// 	graphQLPath: '/graphql',
+// 	playgroundPath: '/playground',
+// 	graphQLCustomTypeDefs: gql`${fs.readFileSync('./cloud/schema.graphql')}`,
+// });
 
 /**
  * Parse govnocode fix
