@@ -1,5 +1,5 @@
+import {google} from "googleapis";
 Parse.Cloud.define("GoogleSignIn", async (request) => {
-    const google = require("googleapis").google;
     // Google's OAuth2 client
     const OAuth2 = google.auth.OAuth2;
   
@@ -21,7 +21,6 @@ Parse.Cloud.define("GoogleSignIn", async (request) => {
   });
   
   Parse.Cloud.define("GoogleToken", async (request) => { 
-    const google = require("googleapis").google;
     // Google's OAuth2 client
     const OAuth2 = google.auth.OAuth2;
     // Create an OAuth2 client object from the credentials in our config file

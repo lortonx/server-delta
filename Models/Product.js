@@ -1,5 +1,5 @@
 // Продукт
-// @ts-check
+
 const params = {
     productId: 'noname',
     type: 0,
@@ -12,15 +12,13 @@ const params = {
 /**
  * @extends {Parse.Object<params>}
  */
-class Product extends Parse.Object {
+export default class Product extends Parse.Object {
     constructor() {
         super('Product', Object.assign({},params));
         /** @type {params} */
         this.attributes
     }
 }
-
-module.exports = Product;
 
 const Schema = new Parse.Schema('Product');
 Schema.get().catch(() => {

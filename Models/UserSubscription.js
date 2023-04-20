@@ -1,5 +1,3 @@
-// Подписка пользователя
-// @ts-check
 const params = {
     /**@type {Parse.User} */
     user:null,
@@ -19,7 +17,7 @@ const params = {
 /**
  * @extends {Parse.Object<params>}
  */
-class UserSubscription extends Parse.Object {
+export default class UserSubscription extends Parse.Object {
     constructor() {
         super('UserSubscription', Object.assign({},params));
         /** @type {params} */
@@ -51,7 +49,8 @@ class UserSubscription extends Parse.Object {
         if(this.get('status') == 'active') throw new Error('Subscription "status" already "active"')
         this.set('status', 'active')
         this.set('ds', new Date())
-        this.setExpirationDate(new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 24)))
+        // 30 days
+        this.set('de', new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 30)))
         return this
     }
     /**
@@ -76,8 +75,6 @@ class UserSubscription extends Parse.Object {
         throw new Error('Not implemented')
     }
 }
-
-module.exports = UserSubscription;
 
 const Schema = new Parse.Schema('UserSubscription');
 Schema.get().catch(() => {

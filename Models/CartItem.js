@@ -1,5 +1,4 @@
 // Объект в корзине
-// @ts-check
 const params = {
     /**@type {import("./Product")} */
     product: null,
@@ -15,7 +14,7 @@ const params = {
  * @extends {Parse.Object<params>}
  */
 
-const CartItem = class CartItem extends Parse.Object {
+export default class CartItem extends Parse.Object {
     constructor() {
         super('CartItem', Object.assign({},params));
     }
@@ -28,5 +27,3 @@ Schema.get().catch(() => {
     Schema.addNumber('amount')
     Schema.save()
 })
-
-module.exports = CartItem;

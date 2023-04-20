@@ -1,6 +1,6 @@
-// @ts-check
-const BMC = require('../Payments/BMC');
-
+import BMC from '../Payments/BMC';
+import BmcExtra from './BmcExtra';
+import BmcSupport from './BmcSupport';
 
 const params = { 
     number_of_coffees:  0,
@@ -21,7 +21,7 @@ const params = {
  * @extends {Parse.Object<params>}
  */
 
-const BmcEvent = class BmcEvent extends Parse.Object {
+export default class BmcEvent extends Parse.Object {
     constructor() {
         // @ts-ignore
         super('BmcEvent',/** @type {params}*/{});
@@ -43,7 +43,7 @@ const BmcEvent = class BmcEvent extends Parse.Object {
         )
     }
     /**
-     * @param {import('../Payments/BMC').BmcHookEvent['response']} extra 
+     * @param {IBmcHookEvent['response']} extra 
      */
     createRecord(extra){
         this.set({
@@ -56,7 +56,6 @@ const BmcEvent = class BmcEvent extends Parse.Object {
 }
 Parse.Object.registerSubclass('BmcEvent', BmcEvent);
 global.BmcEvent = BmcEvent;
-module.exports = BmcEvent;
 
 const Schema = new Parse.Schema('BmcEvent');
 Schema.get().catch(() => {
@@ -70,7 +69,3 @@ Schema.get().catch(() => {
     Schema.addPointer('extra', 'BmcExtra')
     Schema.save()
 })
-
-
-const BmcExtra = require('./BmcExtra');
-const BmcSupport = require('./BmcSupport');

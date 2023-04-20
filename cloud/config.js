@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     processUserDataInterval: 1*1*60*60*1000,
     get ts(){
         const date = new Date()

@@ -1,4 +1,4 @@
-const UserSubscription = require("../Models/UserSubscription");
+import UserSubscription from "../Models/UserSubscription";
 
 const checkRights = (user, obj) => {
     const acl = obj.getACL();

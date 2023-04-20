@@ -13,15 +13,13 @@ const params = {
 /**
  * @extends {Parse.Object<params>}
  */
-class Cart extends Parse.Object {
+export default class Cart extends Parse.Object {
     constructor() {
         super('Cart', Object.assign({},params));
         /** @type {params} */
         this.attributes
     }
 }
-
-module.exports = Cart
 
 const Schema = new Parse.Schema('Cart');
 Schema.get().catch(() => {

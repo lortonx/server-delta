@@ -51,7 +51,7 @@ async function stopParseServer() {
   parseServerState = {};
 }
 
-module.exports = {
+export {
   dropDB,
   startParseServer,
   stopParseServer,

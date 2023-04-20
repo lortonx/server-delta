@@ -1,4 +1,4 @@
-const { default: fetch } = require("node-fetch");
+import fetch from "node-fetch";
 // const Parse = require("parse/lib/browser/Parse");
 
 Parse.Cloud.define('hello', req => {

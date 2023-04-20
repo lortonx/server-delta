@@ -1,15 +1,12 @@
-// @ts-ignore
-const CryptoJS = require('crypto-js');
-const Cart = require('../Models/Cart.js');
-const CartItem = require('../Models/CartItem.js');
-const Plan = require('../Models/Plan.js');
-const Product = require('../Models/Product.js');
-const Subscription = require('../Models/Subscription.js');
-const UserSubscription = require('../Models/UserSubscription.js');
-const Wallet = require('../Models/Wallet.js');
-
-
-const BMC = require('../Payments/BMC.js');
+import CryptoJS from 'crypto-js';
+import Cart from '../Models/Cart.js';
+import CartItem from '../Models/CartItem.js';
+import Plan from '../Models/Plan.js';
+import Product from '../Models/Product.js';
+import Subscription from '../Models/Subscription.js';
+import UserSubscription from '../Models/UserSubscription.js';
+import Wallet from '../Models/Wallet.js';
+import BMC from '../Payments/BMC.js';
 const coffee = new BMC(process.env.BMC_TOKEN||'null'); // add your token here
 
 global.BMC = coffee;

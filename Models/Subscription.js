@@ -1,5 +1,3 @@
-// Правила подписок
-// @ts-check
 const params = {
     sp: null,
     /**@type {string} */ name: 'none',
@@ -14,7 +12,7 @@ const params = {
 /**
  * @extends {Parse.Object<params>}
  */
-class Subscription extends Parse.Object {
+export default class Subscription extends Parse.Object {
     constructor() {
         super('Subscription', Object.assign({},params));
         /** @type {params} */
@@ -45,8 +43,6 @@ class Subscription extends Parse.Object {
     //     this.save()
     // }
 }
-
-module.exports = Subscription;
 
 const Schema = new Parse.Schema('Subscription');
 Schema.get().catch(() => {
@@ -131,5 +127,3 @@ const installDepends = async () => {
         await subscription.save()
     }
 }
-
-module.exports = Subscription;

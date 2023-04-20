@@ -1,12 +1,13 @@
-const cryptoJs = require('crypto-js');
+import cryptoJs from 'crypto-js';
+import {URLSearchParams} from 'url';
 
 /**
  * Buy Me A Coffee JS | Main File
  * by Waren Gonzaga
  * modified by Alex L
  */
- const axios = require('axios').default;
- const toughCookie = require('tough-cookie');
+import axios from 'axios';
+import toughCookie from 'tough-cookie';
 // https://developers.buymeacoffee.com/#/apireference
 // https://www.buymeacoffee.com/webhook
 // https://developers.buymeacoffee.com/dashboard
@@ -23,7 +24,7 @@ const cryptoJs = require('crypto-js');
  * New Extra - Triggers when you create a new extra.
  * New Product - Triggers when you add a new product to shop.
  */
-class BMC {
+export default class BMC {
     constructor(access_token) {
         this.access_token = access_token;
         this.author_name_string = 'alex.lylko'
@@ -69,7 +70,7 @@ class BMC {
             });
             // bmc_csrf_token:
         })
-        const key = cookies.find((cookie)=>{ return cookie.key === 'bmccsrftoken' })
+        // const key = cookies.find((cookie)=>{ return cookie.key === 'bmccsrftoken' })
     }
     /**
      * @param {number} page 
@@ -77,34 +78,34 @@ class BMC {
      */
     Supporters(page = 1) {
         const params = new URLSearchParams({
-            page: page
+            page: String(page)
         })
         return this._sendRequest('supporters', params);
     }
     /**
      * @param {"active"|"inactive"|"all"} status 
-     * @returns {Promise<{data: BmcSubscriptionsResponse}>}
+     * @returns {Promise<{data: IBmcSubscriptionsResponse}>}
      */
     Subscriptions(status = 'all', page = 1) {
         const params = new URLSearchParams({
             status: status,
-            page: page
+            page: String(page)
         })
         return this._sendRequest('subscriptions', params);
     }
     /**
      * @param {number} page 
-     * @returns {Promise<import('axios').AxiosResponse & {data: BmcExtrasResponse}>}
+     * @returns {Promise<import('axios').AxiosResponse & {data: IBmcExtrasResponse}>}
      */
     Extras(page = 1) {
         const params = new URLSearchParams({
-            page: page
+            page: String(page)
         })
         return this._sendRequest('extras', params);
     }
     /**
      * @param {number} id 
-     * @returns {Promise<import('axios').AxiosResponse & {data: BmcSupport}>}
+     * @returns {Promise<import('axios').AxiosResponse & {data: IBmcSupport}>}
      */
     getSupportById(id) {
         if(id == undefined) throw new Error('Argument "id" is required')
@@ -112,7 +113,7 @@ class BMC {
     }
     /**
      * @param {number} id 
-     * @returns {Promise<import('axios').AxiosResponse & {data: BmcSubscription}>}
+     * @returns {Promise<import('axios').AxiosResponse & {data: IBmcSubscription}>}
      */
     getSubscriptionById(id) {
         if(id == undefined) throw new Error('Argument "id" is required')
@@ -120,15 +121,15 @@ class BMC {
     }
     /**
      * @param {number} id 
-     * @returns {Promise<import('axios').AxiosResponse & {data: BmcExtras}>}
+     * @returns {Promise<import('axios').AxiosResponse & {data: IBmcExtras}>}
      */
     getExtrasById(id) {
         if(id == undefined) throw new Error('Argument "id" is required')
         return this._sendRequest(`extras/${id}`);
     }
     /**
-     * 
      * @param {string} path 
+     * @param {URLSearchParams|string} params
      * @returns {Promise<*>}
      */
     _sendRequest(path, params = '') {
@@ -223,7 +224,8 @@ class BMC {
                 // "referrer": "https://www.buymeacoffee.com/alex.lylko",
                 // "referrerPolicy": "strict-origin-when-cross-origin",
                 timeout: 5000,
-                body: `bmc_csrf_token=${k}`
+                // body: `bmc_csrf_token=${k}`
+                data: `bmc_csrf_token=${k}`
             })
             .then(res => {
                 console.log('resolved',res)
@@ -249,133 +251,131 @@ class BMC {
     }
     
 }
- 
-module.exports = BMC;
 
-/** pi_3L8qNDJEtINljGAa0ukexNuA
-    @typedef {Object} BmcHookEvent events only for Supports and Extras
-    @property {Object} response
-    @property {string=} response.supporter_name ex "name"
-    @property {string} response.supporter_email ex "example@email.com"
-    @property {string|number} response.number_of_coffees number of cups of coffee (ex 3)
-    @property {string} response.total_amount cash equivalent without currency designation (ex 15)
-    @property {string} response.support_created_on ex "2022-06-04T17:47:04.000000Z"
- */
+// /** pi_3L8qNDJEtINljGAa0ukexNuA
+//     @typedef {Object} BmcHookEvent events only for Supports and Extras
+//     @property {Object} response
+//     @property {string=} response.supporter_name ex "name"
+//     @property {string} response.supporter_email ex "example@email.com"
+//     @property {string|number} response.number_of_coffees number of cups of coffee (ex 3)
+//     @property {string} response.total_amount cash equivalent without currency designation (ex 15)
+//     @property {string} response.support_created_on ex "2022-06-04T17:47:04.000000Z"
+//  */
 
-/**
-    @typedef BmcPageResponse
-    @property {number} current_page page of the result set
-    @property {string} first_page_url ex "https://developers.buymeacoffee.com/api/v1/supporters?page=1"
-    @property {number} from ex 6
-    @property {number} last_page ex 11
-    @property {string} last_page_url ex "https://developers.buymeacoffee.com/api/v1/supporters?page=11"
-    @property {string} next_page_url ex "https://developers.buymeacoffee.com/api/v1/supporters?page=3"
-    @property {string} path ex "https://developers.buymeacoffee.com/api/v1/supporters"
-    @property {number} per_page ex 5
-    @property {string} prev_page_url: "https://developers.buymeacoffee.com/api/v1/supporters?page=1"
-    @property {number} to ex 10
-    @property {number} total ex 53
- */
+// /**
+//     @typedef BmcPageResponse
+//     @property {number} current_page page of the result set
+//     @property {string} first_page_url ex "https://developers.buymeacoffee.com/api/v1/supporters?page=1"
+//     @property {number} from ex 6
+//     @property {number} last_page ex 11
+//     @property {string} last_page_url ex "https://developers.buymeacoffee.com/api/v1/supporters?page=11"
+//     @property {string} next_page_url ex "https://developers.buymeacoffee.com/api/v1/supporters?page=3"
+//     @property {string} path ex "https://developers.buymeacoffee.com/api/v1/supporters"
+//     @property {number} per_page ex 5
+//     @property {string} prev_page_url: "https://developers.buymeacoffee.com/api/v1/supporters?page=1"
+//     @property {number} to ex 10
+//     @property {number} total ex 53
+//  */
 
 
 
-/**
-    @typedef BmcSupport
-    @property {string} country Country code (2 letters)
-    @property {null|*} is_refunded null
-    @property {null|*} order_payload: null
-    @property {string} payer_email emal
-    @property {string} payer_name: "Alex Io"
-    @property {string} payment_platform ex "stripe"
-    @property {null|string} referer ex "https://accounts.google.com/
-    @property {string} support_coffee_price ex "5.0000"
-    @property {number} support_coffees ex 5
-    @property {string} support_created_on: "2022-05-14 10:29:48"
-    @property {string} support_currency ex "EUR"
-    @property {string} support_email
-    @property {0|1} support_hidden
-    @property {number} support_id
-    @property {string} support_note Message from the supporter
-    @property {string} support_updated_on ex "2022-05-14 10:29:48"
-    @property {0|1} support_visibility
-    @property {string} supporter_name ex "Alex Io"
-    @property {string|"FREE_REWARD"} transaction_id ex "pi_3L712mJEtIsfgdfKIokjYYUofdKuJ"
-    @property {null|*} transfer_id
- */
-/**
- * @typedef {{data: BmcSupport[]} & BmcPageResponse} BmcSupportersResponse
- */
+// /**
+//     @typedef BmcSupport
+//     @property {string} country Country code (2 letters)
+//     @property {null|*} is_refunded null
+//     @property {null|*} order_payload: null
+//     @property {string} payer_email emal
+//     @property {string} payer_name: "Alex Io"
+//     @property {string} payment_platform ex "stripe"
+//     @property {null|string} referer ex "https://accounts.google.com/
+//     @property {string} support_coffee_price ex "5.0000"
+//     @property {number} support_coffees ex 5
+//     @property {string} support_created_on: "2022-05-14 10:29:48"
+//     @property {string} support_currency ex "EUR"
+//     @property {string} support_email
+//     @property {0|1} support_hidden
+//     @property {number} support_id
+//     @property {string} support_note Message from the supporter
+//     @property {string} support_updated_on ex "2022-05-14 10:29:48"
+//     @property {0|1} support_visibility
+//     @property {string} supporter_name ex "Alex Io"
+//     @property {string|"FREE_REWARD"} transaction_id ex "pi_3L712mJEtIsfgdfKIokjYYUofdKuJ"
+//     @property {null|*} transfer_id
+//  */
+// /**
+//  * @typedef {{data: BmcSupport[]} & BmcPageResponse} BmcSupportersResponse
+//  */
 
 
-/**
-    @typedef BmcExtras
-    @property {BmcExtraData} extra
-    @property {string} payer_email emal
-    @property {string} payer_name: "Alex L"
-    @property {string} purchase_amount ex "0.00"
-    @property {string} purchase_currency ex "EUR"
-    @property {number} purchase_id
-    @property {0|1} purchase_is_revoked
-    @property {string=} purchase_question "How are you?"
-    @property {string} purchase_updated_on  "2022-06-07 08:56:21"
-    @property {string} purchased_on  "2022-06-07 08:56:21"
- */
+// /**
+//     @typedef BmcExtras
+//     @property {BmcExtraData} extra
+//     @property {string} payer_email emal
+//     @property {string} payer_name: "Alex L"
+//     @property {string} purchase_amount ex "0.00"
+//     @property {string} purchase_currency ex "EUR"
+//     @property {number} purchase_id
+//     @property {0|1} purchase_is_revoked
+//     @property {string=} purchase_question "How are you?"
+//     @property {string} purchase_updated_on  "2022-06-07 08:56:21"
+//     @property {string} purchased_on  "2022-06-07 08:56:21"
+//  */
 
-/**
-    @typedef BmcExtraData Extra info
-    @property {string=} attributes JSON stringified
-    @property {string} reward_coffee_price "0.00"
-    @property {string} reward_confirmation_message: "Congratulations! Your reward will be credited to the account associated with the email you specified"
-    @property {string} reward_created_on: "2022-05-14 10:18:47"
-    @property {string|null} reward_deleted_on null
-    @property {string} reward_description "Access to additional features .... "
-    @property {0|1} reward_has_membership_pricing 0
-    @property {number} reward_id 71171
-    @property {string} reward_image "https://cdn.buymeacoffee.com/uploads/project_updates/2022/05/5d06315dc725ca284f01558527c1bdb6.jpg"
-    @property {0|1} reward_is_active: 0
-    @property {string} reward_member_price: "0.00"
-    @property {0|1} reward_order: 0
-    @property {string} reward_question: "Whats ur email"
-    @property {string} reward_slots: null
-    @property {string} reward_title "Vip Subscription 1 month"
-    @property {string} reward_updated_on: "2022-06-07 08:56:21"
-    @property {number} reward_used 26
-    @property {0|1} reward_visibility 1
- */
-/**
-    @typedef {{data: BmcExtras[]} & BmcPageResponse} BmcExtrasResponse
- */
+// /**
+//     @typedef BmcExtraData Extra info
+//     @property {string=} attributes JSON stringified
+//     @property {string} reward_coffee_price "0.00"
+//     @property {string} reward_confirmation_message: "Congratulations! Your reward will be credited to the account associated with the email you specified"
+//     @property {string} reward_created_on: "2022-05-14 10:18:47"
+//     @property {string|null} reward_deleted_on null
+//     @property {string} reward_description "Access to additional features .... "
+//     @property {0|1} reward_has_membership_pricing 0
+//     @property {number} reward_id 71171
+//     @property {string} reward_image "https://cdn.buymeacoffee.com/uploads/project_updates/2022/05/5d06315dc725ca284f01558527c1bdb6.jpg"
+//     @property {0|1} reward_is_active: 0
+//     @property {string} reward_member_price: "0.00"
+//     @property {0|1} reward_order: 0
+//     @property {string} reward_question: "Whats ur email"
+//     @property {string} reward_slots: null
+//     @property {string} reward_title "Vip Subscription 1 month"
+//     @property {string} reward_updated_on: "2022-06-07 08:56:21"
+//     @property {number} reward_used 26
+//     @property {0|1} reward_visibility 1
+//  */
+// /**
+//     @typedef {{data: BmcExtras[]} & BmcPageResponse} BmcExtrasResponse
+//  */
 
 
 
 
-/**
-   @typedef BmcSubscription
-   @property {string|null} country - null
-   @property {0|1}    is_manual_payout - 1
-   @property {0|1}    is_paused - 0
-   @property {0|1}    is_razorpay - 0
-   @property {number} membership_level_id - 81808
-   @property {0|1}    message_visibility - 1
-   @property {string} payer_email - "test@example.et"
-   @property {string} payer_name - "Sanya"
-   @property {string|null} referer - null
-   @property {string} subscription_cancelled_on - "2022-06-07 15:57:40"
-   @property {0|1}    subscription_coffee_num - 1
-   @property {string} subscription_coffee_price - "1.000"
-   @property {string} subscription_created_on - "2022-06-07 15:57:14"
-   @property {string} subscription_currency - "EUR"
-   @property {string} subscription_current_period_end - "2022-07-07 15:57:11"
-   @property {string} subscription_current_period_start - "2022-06-07 15:57:11"
-   @property {string|"month"|"lifetime-giveaway"} subscription_duration_type - "month"|"lifetime-giveaway"
-   @property {0|1}    subscription_hidden - 0
-   @property {number} subscription_id - 128616
-   @property {string|null} subscription_is_cancelled - null
-   @property {string|null} subscription_is_cancelled_at_period_end - null
-   @property {string|null} subscription_message - "hii"
-   @property {string} subscription_updated_on - "2022-06-07 15:57:40"
-   @property {string|"GIVE_AWAY"} transaction_id - "sub_1L84mKJEtIN345TGTsBsvzd"|"GIVE_AWAY"
- */
-/**
-    @typedef {{data: BmcSubscription[]} & BmcPageResponse} BmcSubscriptionsResponse
- */
+// /**
+//    @typedef BmcSubscription
+//    @property {string|null} country - null
+//    @property {0|1}    is_manual_payout - 1
+//    @property {0|1}    is_paused - 0
+//    @property {0|1}    is_razorpay - 0
+//    @property {number} membership_level_id - 81808
+//    @property {0|1}    message_visibility - 1
+//    @property {string} payer_email - "test@example.et"
+//    @property {string} payer_name - "Sanya"
+//    @property {string|null} referer - null
+//    @property {string} subscription_cancelled_on - "2022-06-07 15:57:40"
+//    @property {0|1}    subscription_coffee_num - 1
+//    @property {string} subscription_coffee_price - "1.000"
+//    @property {string} subscription_created_on - "2022-06-07 15:57:14"
+//    @property {string} subscription_currency - "EUR"
+//    @property {string} subscription_current_period_end - "2022-07-07 15:57:11"
+//    @property {string} subscription_current_period_start - "2022-06-07 15:57:11"
+//    @property {string|"month"|"lifetime-giveaway"} subscription_duration_type - "month"|"lifetime-giveaway"
+//    @property {0|1}    subscription_hidden - 0
+//    @property {number} subscription_id - 128616
+//    @property {string|null} subscription_is_cancelled - null
+//    @property {string|null} subscription_is_cancelled_at_period_end - null
+//    @property {string|null} subscription_message - "hii"
+//    @property {string} subscription_updated_on - "2022-06-07 15:57:40"
+//    @property {string|"GIVE_AWAY"} transaction_id - "sub_1L84mKJEtIN345TGTsBsvzd"|"GIVE_AWAY"
+//  */
+// /**
+//     @typedef {{data: BmcSubscription[]} & BmcPageResponse} BmcSubscriptionsResponse
+//  */

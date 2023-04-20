@@ -1,7 +1,6 @@
-// require('./WebHooks.js');
-require('../Models/Installer.js')
-require('./Wallet.js');
-require('./auth.js');
-require('./functions.js');
-require('./processUserData.js');
-require('./API.js');
+import {} from '../Models/Installer.js';
+import {} from './Wallet.js';
+import {} from './auth.js';
+import {} from './functions.js';
+import {} from './processUserData.js';
+import {} from './API.js';

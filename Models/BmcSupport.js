@@ -1,6 +1,5 @@
-// @ts-check
-const BMC = require('../Payments/BMC.js');
-
+import BMC from '../Payments/BMC'
+import BmcExtra from './BmcExtra.js'
 
 const params = {
     payer_name: '',
@@ -44,7 +43,7 @@ const params = {
 /**
  * @extends {Parse.Object<params>}
  */
-const BmcSupport = class BmcSupport extends Parse.Object {
+export default class BmcSupport extends Parse.Object {
     constructor() {
         // @ts-ignore
         super('BmcSupport', /** @type {params}*/{})
@@ -81,7 +80,7 @@ const BmcSupport = class BmcSupport extends Parse.Object {
         )
     }
     /**
-     * @param {import('../Payments/BMC').BmcSupport} support 
+     * @param {IBmcSupport} support 
      */
     createRecord(support){
         this.set({
@@ -160,6 +159,3 @@ Schema.get().catch(() => {
 })
 
 global.BmcSupport = BmcSupport;
-module.exports = BmcSupport;
-
-const BmcExtra = require('./BmcExtra.js');

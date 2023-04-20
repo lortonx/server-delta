@@ -1,24 +1,36 @@
-// @ts-check
-require('dotenv').config();
-const gql = require('graphql-tag');
-const cors = require('cors');
-const fs = require('fs');
-const express = require('express');
-const {/* default: ParseServer, */ParseGraphQLServer }  = require('parse-server')
-const ParseServer = require('parse-server/lib/ParseServer').default;
-const ParseDashboard = require('parse-dashboard');
-const path = require('path');
-const BMC = require('./Payments/BMC.js');
-const parseServer = require('./ParseServer.js');
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+// console.log(__dirname)
+const __dirname = path.resolve();
+import dotenv from 'dotenv';
+Object.assign(process.env, dotenv.config().parsed);
+
+import gpl, { gql } from 'graphql-tag';
+import fs from 'fs';
+
+import cors from 'cors';
+import express from 'express';
+import { ParseServer, ParseGraphQLServer } from 'parse-server';
+// import ParseServer from 'parse-server/lib/ParseServer';
+import ParseDashboard from 'parse-dashboard';
+import path from 'path';
+import BMC from './Payments/BMC.js';
+// import {parseServer} from './ParseServer.js';
+import { fileURLToPath } from 'url';
+import http from 'http';
+
 const args = process.argv || [];
 const test = args.some(arg => arg.includes('jasmine'));
+
+
 
 
 if(!('SIGNATURE_KEY' in process.env)){
 	throw Error('SIGNATURE_KEY is not defined')
 }
 
-const app = express();
+
+export const app = express();
 
 app.use(express.json( { verify: ( req, res, buffer ) => {
 	// @ts-ignore
@@ -40,13 +52,13 @@ app.post('/webhook/BmcHook/' ,(req, res)=>{
 	}
 	res.sendStatus( 200 );
 
-	/** @type {import("./Payments/BMC.js").BmcHookEvent} */
+	/** @type {IBmcHookEvent} */
 	const body = req.body
 	console.log('APP WEBHOOKED BY BMC', body)
 	srv.api.handleBmcEvent(body)
 })
 
-app.use('/', express.static(path.join(__dirname, '/public')));
+app.use('/public', express.static(path.join(__dirname, '/public')));
 
 
 // if (!test) {
@@ -54,13 +66,60 @@ app.use('/', express.static(path.join(__dirname, '/public')));
 // console.log(api.config.loggerController)
 // }
 
-// const parseGraphQLServer = new ParseGraphQLServer(parseServer,{
-// 		graphQLPath: '/graphql',
-// 		playgroundPath: '/playground',
-// 		graphQLCustomTypeDefs: gql`${fs.readFileSync('./cloud/schema.graphql')}`,
-// 	}
-// );
+
+// await parseServer.start()
+
+const databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
+if (!databaseUri) {
+  console.log('> DATABASE_URI not specified, falling back to localhost.');
+}
+/** @typedef {import('parse-server/lib/Options/Definitions')['ParseServerOptions']} ParseServerOption */ // @ts-ignore
+/** @type {{ [K in keyof ParseServerOption]?: ReturnType<ParseServerOption[K]['action']> | ParseServerOption[K]['default']}} */
+const config = {
+	// logLevel: 'info',
+	// silent: true,
+	allowOrigin:'*', 
+	// allowClientClassCreation: false,
+	logLevel: "error",
+	appName: 'Delta Backend',
+	databaseURI:  databaseUri ,
+	// directAccess: true,
+	cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
+	appId: 'myAppId',
+	masterKey:  process.env.MASTER_KEY || 'myMasterKey', //Add your master key here. Keep it secret!
+	serverURL: process.env.SERVER_URL, // Don't forget to change to https if needed
+	liveQuery: {
+		classNames: ['Plan', 'Comments', 'GameScore','MonitorRestrictionRules','Product','UserSubscription'], // List of classes to support for query subscriptions
+	},
+	jsonLogs: false,
+};
+
+const parseServer =  ParseServer(config);
+
+const parseGraphQLServer = new ParseGraphQLServer(parseServer,{
+	graphQLPath: '/graphql',
+	playgroundPath: '/playground',
+	graphQLCustomTypeDefs: gql`${fs.readFileSync('./cloud/schema.graphql')}`,
+});
+
+/**
+ * Parse govnocode fix
+ */
+const real_resolve = path.resolve
+if(process.platform.includes('win')) path.resolve = function(){
+	if(arguments[1]?.includes?.(config.cloud)) {
+		path.resolve = real_resolve
+		return 'file://' + real_resolve.apply(this, arguments)
+	}
+	return real_resolve.apply(this, arguments)
+}
+// @ts-ignore
+await parseServer.start()
+
 app.use('/parse', parseServer.app);
+// console.log(parseLiveQueryServer)
+// }
+
 
 // parseGraphQLServer.applyGraphQL(app);
 // parseGraphQLServer.applyPlayground(app);
@@ -77,49 +136,47 @@ app.get('/test', function (req, res) {
 
 
 
-
 const PORT = process.env.PORT || 1337;
 // if (!test) {
-const httpServer = require('http').createServer(app);
+const httpServer = http.createServer(app);
 httpServer.listen(PORT, function () {
 	console.log('Parse Server running on port ' + PORT + '.');
 });
-  // This will enable the Live Query real-time server
+
 const parseLiveQueryServer = ParseServer.createLiveQueryServer(httpServer);
-// console.log(parseLiveQueryServer)
-// }
 
 
-const dashboard_config = {
-	"apps": [
-		{
-			"serverURL": parseServer.config.serverURL,
-			"appId": parseServer.config.appId,
-			"masterKey": parseServer.config.masterKey,
-			"appName": parseServer.config.appName
+{
+	const config = {
+		"apps": [
+			{
+				"serverURL": parseServer.config.serverURL,
+				"appId": parseServer.config.appId,
+				"masterKey": parseServer.config.masterKey,
+				"appName": parseServer.config.appName
+			}
+		],
+		"trustProxy": 1,
+		allowInsecureHTTP: false,
+		get users(){
+			const users = [{
+				  "user": process.env.DASHBOARD_USER,
+				  "pass": process.env.DASHBOARD_PASS
+			}]
+			if(process.env.DASHBOARD_USER) return users
+			return undefined
 		}
-	],
-	"trustProxy": 1,
-	allowInsecureHTTP: false,
-	get users(){
-		const users = [{
-			  "user":process.env.DASHBOARD_USER,
-			  "pass":process.env.DASHBOARD_PASS
-		}]
-		if(process.env.DASHBOARD_USER) return users
-		return undefined
 	}
+	const dashboard = ParseDashboard(config);
+	app.use('/dashboard', dashboard);
 }
-let dashboard = ParseDashboard(dashboard_config);
-app.use('/dashboard', dashboard);
+
+// import Api from './apis/api.js';
 
 const srv = {
 	app,
-	api: new (require('./apis/api')),
+	// @ts-ignore
+	api: new (await import('./apis/api.js').then(m=>m.default)),
+	// api: new Api,
 }
 global.srv = srv;
-
-module.exports = {
-  app,
-  config: parseServer.config
-};

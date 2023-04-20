@@ -1,7 +1,7 @@
-const Subscription = require('../Models/Subscription.js');
-const UserSubscription = require('../Models/UserSubscription.js');
+import Subscription from "../Models/Subscription"
+import UserSubscription from "../Models/UserSubscription"
 
-const subscriptions = new class subscriptionsApi {
+export default new class subscriptionsApi {
 	constructor() {
 	}
 	/**
@@ -10,7 +10,9 @@ const subscriptions = new class subscriptionsApi {
 	 * @returns 
 	 */
 	async createUserSubscription(userId, subscriptionId) {
-		const subscription = await new Parse.Query(Subscription).equalTo('objectId', subscriptionId).first({useMasterKey: true})
+		const subscription = await new Parse.Query(Subscription)
+			.equalTo('objectId', subscriptionId)
+			.first({useMasterKey: true})
 		if(!subscription) throw new Error(`Subscription ${subscriptionId} not found`)
 		const user = await new Parse.Query(Parse.User).equalTo('objectId', userId).first({useMasterKey: true})
 		if(!user) throw new Error(`User ${userId} not found`)
@@ -18,8 +20,3 @@ const subscriptions = new class subscriptionsApi {
 		return await userSubscription.save({}, {useMasterKey: true})
 	}
 }
-
-
-
-
-module.exports = subscriptions;

@@ -1,5 +1,8 @@
 {
   "name": "parse-server-example",
+  "type": "module",
+  "module": "es2022",
+  "target": "es2017",
   "version": "1.4.0",
   "description": "An example Parse API server using the parse-server module",
   "main": "index.js",
@@ -10,7 +13,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node index.js",
-    "dev": "set NODE_ENV=dev&& nodemon --inspect index.js",
+    "dev": "set NODE_ENV=dev && nodemon --inspect --experimental-specifier-resolution=node index.js",
     "lint": "eslint --cache ./cloud && eslint --cache index.js && eslint --cache ./spec",
     "lint-fix": "eslint --cache --fix ./cloud && eslint --cache --fix index.js && eslint --cache --fix ./spec",
     "test": "mongodb-runner start && jasmine",
@@ -20,6 +23,7 @@
     "tunnel": "ssh -R 80:localhost:1337 nokey@localhost.run"
   },
   "dependencies": {
+    "@types/parse": "^3.0.4",
     "axios": "^0.27.2",
     "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
@@ -27,16 +31,19 @@
     "express": "4.17.1",
     "googleapis": "^100.0.0",
     "graphql-tag": "^2.12.6",
+    "i": "^0.3.7",
     "kerberos": "^2.0.0",
     "node-fetch": "^2.6.7",
+    "npm": "^9.6.5",
     "overshom-wayforpay": "^1.1.0",
-    "parse": "^3.4.2",
-    "parse-dashboard": "^4.1.1",
-    "parse-server": "^5.2.1",
-    "tough-cookie": "^4.0.0"
+    "parse": "^4.0.1",
+    "parse-dashboard": "^5.0.0",
+    "parse-server": "^6.0.0",
+    "tough-cookie": "^4.0.0",
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.15.0"
   },
   "engines": {
-    "node": ">=4.3"
+    "node": ">=12.22.10 <19"
   },
   "devDependencies": {
     "babel-eslint": "10.1.0",

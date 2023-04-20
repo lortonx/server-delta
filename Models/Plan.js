@@ -1,7 +1,5 @@
 // План использования продукта
 
-const UserSubscription = require("./UserSubscription")
-
 // @ts-check
 const params = {
     // /**@type {import("./Product.js")} */
@@ -28,7 +26,7 @@ const params = {
 /**
  * @extends {Parse.Object<params>}
  */
-class Plan extends Parse.Object {
+export default class Plan extends Parse.Object {
     /**
      * 
      * @param {Parse.User} user 
@@ -127,7 +125,6 @@ class Plan extends Parse.Object {
     // }
 }
 Parse.Object.registerSubclass('Plan', Plan);
-module.exports = Plan;
 
 const Schema = new Parse.Schema('Plan');
 Schema.get().catch(() => {

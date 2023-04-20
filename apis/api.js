@@ -1,21 +1,19 @@
-// @ts-check
+import Cart from '../Models/Cart.js';
+import CartItem from '../Models/CartItem.js';
+import Plan from '../Models/Plan.js';
+import Product from '../Models/Product.js';
+import Subscription from '../Models/Subscription.js';
+import UserSubscription from '../Models/UserSubscription.js';
+import Wallet from '../Models/Wallet.js';
 
-const Cart = require('../Models/Cart.js');
-const CartItem = require('../Models/CartItem.js');
-const Plan = require('../Models/Plan.js');
-const Product = require('../Models/Product.js');
-const Subscription = require('../Models/Subscription.js');
-const UserSubscription = require('../Models/UserSubscription.js');
-const Wallet = require('../Models/Wallet.js');
+import subscriptions from './subscriptions.js';
 
-const subscriptions = require('./subscriptions.js');
-
-const _BMC = require('../Payments/BMC.js');
-const BmcSupport = require('../Models/BmcSupport.js');
-const BmcExtra = require('../Models/BmcExtra.js');
-const BmcEvent = require('../Models/BmcEvent.js');
+import _BMC from '../Payments/BMC.js';
+import BmcSupport from '../Models/BmcSupport.js';
+import BmcExtra from '../Models/BmcExtra.js';
+import BmcEvent from '../Models/BmcEvent.js';
 const BMC = new _BMC(process.env.BMC_TOKEN||'null')
-class Api {
+export default class Api {
 	constructor() {
 		this.subscriptions = subscriptions;
 	}
@@ -230,7 +228,7 @@ class Api {
 // async function per
 
 
-module.exports = Api;
+// module.exports = Api;
 
 
 

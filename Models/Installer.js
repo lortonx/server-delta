@@ -1,13 +1,12 @@
-const Cart = require('./Cart.js')
-const CartItem = require('./CartItem.js')
-const Product = require('./Product.js')
-const Wallet = require('./Wallet.js')
-const Plan = require('./Plan.js')
+import Cart from './Cart.js'
+import CartItem from './CartItem.js'
+import Product from './Product.js'
+import Wallet from './Wallet.js'
+import Plan from './Plan.js'
+import Subscription from './Subscription.js'
+import UserSubscription from './UserSubscription.js'
 
-const Subscription = require('./Subscription.js')
-const UserSubscription = require('./UserSubscription.js')
 
-// @ts-check
 class Installer {
     constructor(){
         // this.install()

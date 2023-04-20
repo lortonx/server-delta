@@ -1,12 +1,10 @@
-// @ts-ignore
-const Cart = require('../Models/Cart.js');
-const CartItem = require('../Models/CartItem.js');
-const Plan = require('../Models/Plan.js');
-const Product = require('../Models/Product.js');
-const Subscription = require('../Models/Subscription.js');
-const UserSubscription = require('../Models/UserSubscription.js');
-const Wallet = require('../Models/Wallet.js')
-
+import Cart from '../Models/Cart.js';
+import CartItem from '../Models/CartItem.js';
+import Plan from '../Models/Plan.js';
+import Product from '../Models/Product.js';
+import Subscription from '../Models/Subscription.js';
+import UserSubscription from '../Models/UserSubscription.js';
+import Wallet from '../Models/Wallet.js';
 
 
 class UserWallet {
@@ -249,3 +247,6 @@ class UserWallet {
 // var visitQuery = new Parse.Query('Visit');
 // visitQuery.equalTo('user', { "__type": "Pointer", "className": "_User", "objectId": userId });
 // return visitQuery.find();
+
+
+// Parse.Cloud.run('createUserSubscription',{userId:'voIMN6K8DY', planId:'YoDd23kOy3'})

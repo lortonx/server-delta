@@ -15,15 +15,13 @@ const params = {
 /**
  * @extends {Parse.Object<params>}
  */
-class Wallet extends Parse.Object {
+export default class Wallet extends Parse.Object {
     constructor() {
         super('Wallet', Object.assign({},params));
         /** @type {params} */
         this.attributes
     }
 }
-
-module.exports = Wallet;
 
 const Schema = new Parse.Schema('Wallet');
 Schema.get().then(()=>{
