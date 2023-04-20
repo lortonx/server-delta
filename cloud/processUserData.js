@@ -1,4 +1,4 @@
-import cloudConfig from './config'
+import cloudConfig from './config.js'
 const AGUSER = 'aguser';
 Parse.Cloud.define('cloudConfig', req => {
     return cloudConfig;
