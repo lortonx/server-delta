@@ -39,20 +39,19 @@ app.use(express.json( { verify: ( req, res, buffer ) => {
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-app.post('/webhook/BmcHook/' ,(req, res)=>{
+app.post('/webhook/BmcHook/', (req, res)=>{
 	const BMC_WEBHOOK_SECRET = process.env.BMC_SECRET
-	/** @type {string} */
+	const header_signature = String(req.headers['x-signature-sha256'])
 	// @ts-ignore
-	const header_signature = req.headers['x-bmc-signature']
-	/** @type {string} */
-	// @ts-ignore
-	const rawBody = req.rawBody.toString()
-	if(process.env.NODE_ENV !== 'dev' && !BMC.verifyWebhook(rawBody, header_signature, BMC_WEBHOOK_SECRET)){
+	const rawBody = String(req.rawBody.toString())
+	const isVerified = BMC.verifyWebhook(rawBody, header_signature, BMC_WEBHOOK_SECRET)
+	// console.log('incoming webhook', { isVerified })
+	if(BMC_WEBHOOK_SECRET !== 'NONE' && !isVerified){
 		return res.sendStatus( 401 )
 	}
 	res.sendStatus( 200 );
 
-	/** @type {IBmcHookEvent} */
+	/** @type {IBmcHookBase} */
 	const body = req.body
 	console.log('APP WEBHOOKED BY BMC', body)
 	srv.api.handleBmcEvent(body)
@@ -92,16 +91,16 @@ const config = {
 		classNames: ['Plan', 'Comments', 'GameScore','MonitorRestrictionRules','Product','UserSubscription'], // List of classes to support for query subscriptions
 	},
 	jsonLogs: false,
-	masterKeyIps: ['0.0.0.0/0']
+	masterKeyIps: ['0.0.0.0/0', '::1']
 };
 
 const parseServer =  ParseServer(config);
 
-// const parseGraphQLServer = new ParseGraphQLServer(parseServer,{
-// 	graphQLPath: '/graphql',
-// 	playgroundPath: '/playground',
-// 	graphQLCustomTypeDefs: gql`${fs.readFileSync('./cloud/schema.graphql')}`,
-// });
+const parseGraphQLServer = new ParseGraphQLServer(parseServer,{
+	graphQLPath: '/graphql',
+	playgroundPath: '/playground',
+	graphQLCustomTypeDefs: gql`${fs.readFileSync('./cloud/schema.graphql')}`,
+});
 
 /**
  * Parse govnocode fix
@@ -151,6 +150,7 @@ const parseLiveQueryServer = ParseServer.createLiveQueryServer(httpServer);
 	const config = {
 		"apps": [
 			{
+				"graphQLServerURL": parseServer.config.serverURL.replace('parse', 'graphql'),
 				"serverURL": parseServer.config.serverURL,
 				"appId": parseServer.config.appId,
 				"masterKey": parseServer.config.masterKey,

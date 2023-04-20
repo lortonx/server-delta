@@ -18,11 +18,18 @@ export default class Api {
 		this.subscriptions = subscriptions;
 	}
 	/**
-	 * @param {import('../Payments/BMC').BmcHookEvent} event 
+	 * @param {IBmcHookBase} event 
 	 */
 	async handleBmcEvent(event) {
-		if(!event || !event.response) throw new Error('Bmc event is empty')
-		const bmcEvent = new BmcEvent()
+		if(!event || !event.data) throw new Error('Bmc event is empty')
+		
+		if(event.type in this){
+			this[event.type](event.data)
+		} else {
+			console.log('Bmc event type not found', event.type)
+		}
+
+		/*const bmcEvent = new BmcEvent()
 		bmcEvent.createRecord(event.response)
 		
 		await this.syncAll()
@@ -38,14 +45,35 @@ export default class Api {
 			bmcEvent.set('extra', obj)
 		})
 		await Promise.all([promise1,promise2])
-		await bmcEvent.save({processed: true}, { useMasterKey: true })
+		await bmcEvent.save({processed: true}, { useMasterKey: true })*/
+	}
+	/** @param {IBmcDonationCreated['data']} data*/
+	async ['donation.created'](data) {
+		const bmcEvent = new BmcEvent()
+		bmcEvent.createRecord(data)
+		const user = await bmcEvent.findUserByEmail(data.supporter_email)
+		if(user) bmcEvent.set('user', user)
+
+		await this.syncAll()
+		const promise1 = bmcEvent.findMySupport().then( obj =>{
+			if(obj){
+				bmcEvent.set('support', obj)
+			}else{
+
+			}
+		})
+
+		await Promise.all([
+			promise1,
+			bmcEvent.save()
+		])
 	}
 	async syncAll(syncOnlyLatest = true) {
 		const addedBmcSupport = await this.syncBmcSupports(syncOnlyLatest, async (arr)=>{
 			await this.asociateBmcSupportsWithUsers(arr)
 		})
 		const addedBmcExtra = await this.syncBmcExtras(syncOnlyLatest, async (arr)=>{
-			console.log('addedBmcExtra', arr)
+			// console.log('addedBmcExtra', arr)
 			await this.asociateBmcExtrasWithUsersAndSupports(arr)
 		})
 	}
@@ -93,17 +121,21 @@ export default class Api {
 	async syncBmcSupports(syncOnlyLatest = true, perIteration = (supports_page) => {}){
 		/** @type {BmcSupport[]} */
 		let addedObjects = [];
-		/**@param {import('../Payments/BMC').BmcSupport[]} supports*/
+		/**@param {IBmcSupport[]} supports*/
 		const per_page_iteration = async (supports) => {
-			/** @type {BmcSupport[]} */let addedInIterationObjects = []
-			/** @type {Set<number>}*/  const to_create = new Set();
-			supports.forEach((support) => to_create.add(support.support_id))
+
+			const to_create = new Set(supports.map((support) => support.support_id));
 			/** @type {Array<object>}*/
 			const alreadyInDatabaseUsers = await (new Parse.Query(BmcSupport)).aggregate([
-				{match: { support_id: {$in: Array.from(to_create) } }},
-				{project: { 'support_id': 1, 'objectId': 0 } },
+				// @ts-ignore
+				{$match: { support_id: {$in: Array.from(to_create) } }},
+				// @ts-ignore
+				{$project: { 'support_id': 1, 'objectId': 0 } },
 			])
 			alreadyInDatabaseUsers.forEach((support) => to_create.delete(support.support_id))
+
+			/** @type {BmcSupport[]} */
+			let addedInIterationObjects = []
 			for(const support of supports) {
 				if(!to_create.has(support.support_id)) continue
 				const bmcSupport = new BmcSupport()
@@ -111,14 +143,16 @@ export default class Api {
 				addedObjects.push(bmcSupport)
 				addedInIterationObjects.push(bmcSupport)
 			}
+
 			perIteration(addedInIterationObjects)
 			await Parse.Object.saveAll(addedObjects, { useMasterKey: true })
+
 			return {
 				hasAlreadyInDatabase: alreadyInDatabaseUsers.length > 0,
 				addedObjects: addedInIterationObjects,
 			}
 		}
-		/** @type {import('../Payments/BMC').BmcSupport[]} */
+		/** @type {BmcSupport[]} */
 		let all = [];
 
 		let last_page = 1;
@@ -126,7 +160,6 @@ export default class Api {
 		for( let current_page = 1; current_page <= last_page; current_page++ ) {
 			if( current_page > max_page ) break;
 			const response = await BMC.Supporters(current_page)
-			// console.log('response', response.data)
 			const data = response.data
 			if(!data) throw new Error('Can\'t get data')
 			const resultOfUpdate = await per_page_iteration(data.data)
@@ -152,15 +185,19 @@ export default class Api {
 	async syncBmcExtras(syncOnlyLatest = true, perIteration = (extras_page) => {}){
 		/** @type {BmcExtra[]} */
 		let addedObjects = [];
-		/**@param {import('../Payments/BMC').BmcExtras[]} extras*/
+		
+		/**@param {IBmcExtras[]} extras*/
 		const per_page_iteration = async (extras) => {
+
 			/** @type {BmcExtra[]} */let addedInIterationObjects = []
 			/** @type {Set<number>}*/const to_create = new Set();
 			extras.forEach((extra) => to_create.add(extra.purchase_id))
-			/** @type {Array<object>}*/
+			/** @type {Array<{purchase_id: number}>}*/
 			const alreadyInDatabaseUsers = await (new Parse.Query(BmcExtra)).aggregate([
-				{match: { purchase_id: {$in: Array.from(to_create) } }},
-				{project: { 'purchase_id': 1, 'objectId': 0 } },
+				// @ts-ignore
+				{$match: { purchase_id: {$in: Array.from(to_create) } }},
+				// @ts-ignore
+				{$project: { 'purchase_id': 1, 'objectId': 0 } },
 			])
 			alreadyInDatabaseUsers.forEach((support) => to_create.delete(support.purchase_id))
 			for(const extra of extras) {
@@ -169,7 +206,6 @@ export default class Api {
 				bmcExtra.createRecord(extra)
 				addedObjects.push(bmcExtra)
 				addedInIterationObjects.push(bmcExtra)
-				// console.log('addedInIterationObjects add', bmcExtra)
 			}
 			perIteration(addedInIterationObjects)
 			await Parse.Object.saveAll(addedObjects, { useMasterKey: true })
@@ -178,7 +214,7 @@ export default class Api {
 				addedObjects: addedInIterationObjects
 			}
 		}
-		/** @type {import('../Payments/BMC').BmcExtras[]} */
+		/** @type {IBmcExtras[]} */
 		let all = [];
 		let last_page = 1;
 		let max_page = Infinity;
@@ -208,8 +244,10 @@ export default class Api {
 	 */
 	async searchUserIdsByEmails(emails) {
 		const data = await (new Parse.Query('_User')).aggregate([
-			{match: { email: {$in: emails } }},
-			{group:{
+			// @ts-ignore
+			{$match: { email: {$in: emails } }},
+			// @ts-ignore
+			{$group:{
 				_id:'',
 				ids: {$addToSet:'$_id'},
 				emails: {$addToSet:'$email'},

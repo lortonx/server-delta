@@ -1,7 +1,9 @@
+import Subscription from "./Subscription";
+
 const params = {
     /**@type {Parse.User} */
     user:null,
-    /**@type {import("./Subscription")} */
+    /**@type {Subscription} */
     sp: null,
     /**@type {Date} */ ds: null,
     /**@type {Date} */ de: null,
@@ -26,7 +28,7 @@ export default class UserSubscription extends Parse.Object {
     /**
      * 
      * @param {Parse.User} user 
-     * @param {import("./Subscription")} subscription 
+     * @param {Subscription} subscription 
      */
     static createRecord(user, subscription) {
         if(!user) throw new Error('User param must be set')

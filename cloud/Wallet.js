@@ -95,9 +95,10 @@ class UserWallet {
 	// 	await productWallet.save()
 	// }
 	/**
-	 * @param {Parse.User} param.user
-	 * @param {string} param.objectId
-	 * @param {number} param.amount 
+	 * @param {Object} obj
+	 * @param {Parse.User} obj.user
+	 * @param {string} obj.objectId
+	 * @param {number} obj.amount 
 	 */
 	async getPayLink({user, objectId, amount}) {
 		const cartId = objectId
@@ -105,7 +106,7 @@ class UserWallet {
 		if(!cart) throw new Error('Cart not found')
 		
 		{
-			const cartItem = new CartItem
+			const cartItem = new CartItem()
 			cartItem.set('cart', cart)
 			cartItem.set('product', await new Parse.Query(Product).equalTo('productId', 'coin').first() )
 			cartItem.set('amount', 60)
@@ -140,16 +141,15 @@ class UserWallet {
 
 	// }
 	/**
-	 * @param {Parse.User} param.user
+	 * @param {Parse.User} user
 	 */
 	async getPlans(user) {
-		/** @type {Plan} */
 		const response = 
-		await new Parse.Query(Plan)
-		.select('name,ds,de,dr')
-		.equalTo('user', user)
-		.find()
-		// console.log(response)
+			await new Parse.Query(Plan)
+				.select('name','ds','de','dr')
+				.equalTo('user', user)
+				.find()
+
 		return response.map(plan => {
 			return {
 				name: plan.get('name'),
@@ -159,10 +159,18 @@ class UserWallet {
 		})
 	}
 	async createUserSubscription(userId, subscriptionId) {
-		const subscription = await new Parse.Query(Subscription).equalTo('objectId', subscriptionId).first({useMasterKey: true})
+		const subscription = 
+			await new Parse.Query(Subscription)
+			.equalTo('objectId', subscriptionId)
+			.first({useMasterKey: true})
 		if(!subscription) throw new Error(`Subscription ${subscriptionId} not found`)
-		const user = await new Parse.Query(Parse.User).equalTo('objectId', userId).first({useMasterKey: true})
+
+		const user = 
+			await new Parse.Query(Parse.User)
+			.equalTo('objectId', userId)
+			.first({useMasterKey: true})
 		if(!user) throw new Error(`User ${userId} not found`)
+
 		const userSubscription = UserSubscription.createRecord(user, subscription)
 		return await userSubscription.save({}, {useMasterKey: true})
 	}
@@ -189,11 +197,12 @@ class UserWallet {
 		if(plan.getDurationLeft() != 0) throw new Error('Plan is not expired')
 			
 
-		const activeUserSubscription = await new Parse.Query(UserSubscription)
-			.equalTo('user', user)
-			.greaterThanOrEqualTo('de', new Date())
-			.include('sp')
-			.first()
+		const activeUserSubscription = 
+			await new Parse.Query(UserSubscription)
+				.equalTo('user', user)
+				.greaterThanOrEqualTo('de', new Date())
+				.include('sp')
+				.first()
 		if(!activeUserSubscription) throw new Error('No active subscriptions')
  
 		/**@type {Subscription} */

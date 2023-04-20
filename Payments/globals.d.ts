@@ -3,20 +3,52 @@
  * Events only for Supports and Extras.
  */
 type IBmcTimeFormat = "2022-06-07 15:57:40";
+type IBmcTimeSeconds = number;
+type IBmcCurrency = "USD" | "EUR"
+type IBmcBoolean = "true" | "false";
+type IBmcHookType = "donation.created" | "donation.refunded" | "extra_purchase.created" | "extra_purchase.refunded" | "membership.started" | "membership.updated" | "membership.cancelled";
+type IBmcObject = "membership" | "payment";
+type IBmcStatus = "succeeded" | "refunded";
 
-interface IBmcHookEvent {
-    response: {
-      supporter_name?: string;
-      supporter_email: string;
-      /** Number of cups of coffee. Can be a string or a number. @example "3" */
-      number_of_coffees: string | number;
-      /** Cash equivalent without currency designation. @example "15.00" */
-      total_amount: string;
-      /** Date and time of support creation in ISO 8601 format. * @example "2022-06-04T17:47:04.000000Z" */
-      support_created_on: string;
-    };
+interface IBmcHookBase {
+    type: IBmcHookType,
+    live_mode: boolean,
+    /** @example 1 */
+    attempt: number,
+    created: IBmcTimeSeconds,
+    /** @example 1 */
+    event_id: number,
+    data: {}
 }
-
+interface IBmcDonationCreated extends IBmcHookBase {
+    type: "donation.created",
+    data: {
+        id: number,
+        /** @example 5 */
+        amount: number,
+        object: IBmcObject,
+        status: IBmcStatus,
+        /** @example "John bought you a coffee" */
+        message: string,
+        currency: IBmcCurrency,
+        refunded: IBmcBoolean,
+        created_at: IBmcTimeSeconds,
+        note_hidden: IBmcBoolean,
+        refunded_at: null,
+        /** @example "Thanks for the good work" */
+        support_note: string,
+        support_type: "Supporter",
+        supporter_name: "John",
+        /** @example "pi_3Mc51bJEtINljGAa0zVykgUE"*/
+        transaction_id: "pi_3Mc51bJEtINljGAa0zVykgUE",
+        application_fee: "0.25",
+        supporter_email: "john@example.com",
+        total_amount_charged: "5.45"
+     }
+}
+interface IBmcDonationRefunded extends IBmcDonationCreated {
+    type: "donation.refunded"
+}
 interface IBmcPageResponse {
     current_page: number;
     first_page_url: string;

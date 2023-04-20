@@ -1,6 +1,7 @@
 // План использования продукта
 
-// @ts-check
+import UserSubscription from "./UserSubscription"
+
 const params = {
     // /**@type {import("./Product.js")} */
     // product: null,
@@ -23,8 +24,13 @@ const params = {
     /**@type {Date} */
     updatedAt: null,
 }
+const hiddenParams = {
+    duration: 0,
+    remaining: 0,
+    sig: ''
+}
 /**
- * @extends {Parse.Object<params>}
+ * @extends {Parse.Object<params & hiddenParams>}
  */
 export default class Plan extends Parse.Object {
     /**
@@ -33,8 +39,7 @@ export default class Plan extends Parse.Object {
      */
     static query(user) {
         return new Parse.Query(Plan)
-        // @ts-ignore
-		.select('name,ds,de,dr')
+		.select('name','ds','de','dr')
 		.equalTo('user', user)
     }
     /**
@@ -58,14 +63,13 @@ export default class Plan extends Parse.Object {
     }
     /**
      * @param {Parse.User} user 
-     * @param {string} name 
-     * @returns 
+     * @param {string} name
      */
     static async getUserPlanByName(user, name) {
         if(!user) throw new Error('User must be set')
         if(!name) throw new Error('Name of plan must be set')
         const plan = new Parse.Query(Plan)
-		.select('name,ds,de,dr,user')
+		.select('name','ds','de','dr','user')
 		.equalTo('user', user)
         .equalTo('name', name)
         .first()
@@ -78,9 +82,12 @@ export default class Plan extends Parse.Object {
 
     }
     constructor() {
-        super('Plan')
-        /** @type {params} */
-        this.attributes
+        super('Plan', /** @type {params & hiddenParams}*/{})
+        // /** @type {params & hiddenParams} */
+        // this.attributes
+    }
+    static {
+        Parse.Object.registerSubclass('Plan', this);
     }
     init() {
         this.set(params)
@@ -110,9 +117,11 @@ export default class Plan extends Parse.Object {
     getRemainingLeft() {
         return Math.max(0, 0|((this.get('dr').getTime() - new Date().getTime()) / 1000))
     }
+    /** @param {number} miliseconds*/
     setDuration(miliseconds) {
         this.set('de', new Date(new Date().getTime() + miliseconds))
     }
+    /** @param {number} miliseconds*/1
     setRemaining(miliseconds) {
         this.set('dr', new Date(new Date().getTime() + miliseconds))
     }
@@ -124,13 +133,11 @@ export default class Plan extends Parse.Object {
     //     this.set('de', null)
     // }
 }
-Parse.Object.registerSubclass('Plan', Plan);
 
 const Schema = new Parse.Schema('Plan');
 Schema.get().catch(() => {
     Schema.addString('name')
     Schema.addIndex('name_', {
-        // @ts-ignore
         'name': 1
     })
     Schema.addPointer('user', '_User')

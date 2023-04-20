@@ -12,7 +12,7 @@ const coffee = new BMC(process.env.BMC_TOKEN||'null'); // add your token here
 global.BMC = coffee;
 
 Parse.Cloud.define('useBmcSupport', async req => {
-    const requestId = req.functionName + req.user.id
+    // const requestId = req.functionName + req.user.id
     let all = [];
     let last_page = 1;
     let max_page = 2;
@@ -49,9 +49,9 @@ Parse.Cloud.define('useBmcSupport', async req => {
 // coffee.Extras().then(data => console.log('Extras',data));
 
 Parse.Cloud.define('getWallet', async req => {
-    const requestId = req.functionName + req.user.id
     const wallet = await new Parse.Query(Wallet)
-        .select('product.productId,amount,type')
+        // @ts-ignore
+        .select('product.productId','amount','type')
         .equalTo('user', req.user)
         .include('product')
         .find()
@@ -68,20 +68,19 @@ Parse.Cloud.define('getWallet', async req => {
 
 /** JSON вид */
 Parse.Cloud.define('getPlan', async req => {
-    const requestId = req.functionName + req.user.id
     const plans = await new Parse.Query(Plan)
-        .select('product.productId,product.type,expirationAt,duration,status')
-        .include('product')
+        // @ts-ignore
+        .select('product.productId','roduct.type','expirationAt','duration','remaining','status','name','de')
+        // .include('product')
         .equalTo('user', req.user)
         .find()
     return plans.map(item => {
         return {
             id: item.id,
-            productId: item.get('product').get('productId'),
+            remaining: item.get('remaining'),
             duration: item.get('duration'),
-            expirationAt: item.get('expirationAt').toISOString(),
-            type: item.get('product').get('type'),
-            status: item.get('status')
+            de: item.get('de').toISOString(),
+            dr: item.get('dr').toISOString()
         }
     })
 },{
@@ -90,7 +89,6 @@ Parse.Cloud.define('getPlan', async req => {
 
 
 Parse.Cloud.define('exchangeCoffeeForSubscription', async req => {
-    const requestId = req.functionName + req.user.id
     const user = req.user
 
     {
@@ -114,17 +112,19 @@ Parse.Cloud.define('exchangeCoffeeForSubscription', async req => {
 
 
 Parse.Cloud.beforeFind('Plan', async (req, res) =>{
+    // console.log('beforeFind', req)
     /** @type {Parse.Query} */
     const query = req.query
-    if(query._select?.includes('sig')) query.select('user','name')
-    if(query._select?.includes('duration')) query.select('de')
-    if(query._select?.includes('remaining')) query.select('dr')
+    if(query['_select']?.includes('sig')) query.select('user','name')
+    if(query['_select']?.includes('duration')) query.select('de')
+    if(query['_select']?.includes('remaining')) query.select('dr')
 })
 
-/** Доцепляем duration, remaining, sig */
+/** Доцепляем duration, remaining, sig */ // @ts-ignore
 Parse.Cloud.afterLiveQueryEvent('Plan', (request) => {
     /** @type {Plan}*/
     const object = request.object;
+    /** @type {Parse.User}*/
     const user = request.user
     const original = request.original
 

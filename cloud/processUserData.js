@@ -1,33 +1,42 @@
 import cloudConfig from './config.js'
-const AGUSER = 'aguser';
+
 Parse.Cloud.define('cloudConfig', req => {
     return cloudConfig;
 });
 
-class AGUser extends Parse.Object {constructor(id){
-    super(AGUSER,{
-        countryCode: 'US',
-        displayName: '',
-        // lvl: 0,
-        accountAge: 0,
-        accountBirthDate: new Date(),
-        paying: false,
-        potions: 0,
-        skins: 0,
-        quests: 0,
-        trophies: 0,
-        guid: '',
-        realm: 0,
-        realmId: '',
-        avatarUrl: '',
-        score: 0,
-        played: 0,
-        mass: 0,
-        alive: 0,
-        totalMass: 0,
-        cellsEaten: 0,
-    })
-}}
+
+const AGUSER = 'aguser';
+const attributes = {
+    countryCode: 'US',
+    displayName: '',
+    // lvl: 0,
+    accountAge: 0,
+    accountBirthDate: new Date(),
+    paying: false,
+    potions: 0,
+    skins: 0,
+    quests: 0,
+    trophies: 0,
+    guid: '',
+    realm: 0,
+    realmId: '',
+    avatarUrl: '',
+    score: 0,
+    played: 0,
+    mass: 0,
+    alive: 0,
+    totalMass: 0,
+    cellsEaten: 0,
+}
+
+/**
+ * @extends {Parse.Object<attributes>}
+ */
+class AGUser extends Parse.Object {
+    constructor(className, attrs, options) {
+        super(AGUSER, attributes)
+    }
+}
 Parse.Cloud.define('processUserData', async req => {
 
     return;

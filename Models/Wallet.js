@@ -1,7 +1,8 @@
 // Кошелек пользователя
-// @ts-check
+import Product from "./Product";
+
 const params = {
-    /**@type {import("./Product.js")} */
+    /**@type {Product} */
     product: null,
     type: 0,
     amount: 0,

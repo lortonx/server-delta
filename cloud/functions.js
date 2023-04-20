@@ -38,8 +38,8 @@ Parse.Cloud.beforeSave('_User', async function(data) {
 	if(data.object.isNew()){ // is new user
 		if(data.object.attributes.authData && data.object.attributes.authData.google && data.object.attributes.authData.google.id_token){
 			/* Захват информации с гугла при первой авторизации */
-			const req = await fetch('https://www.googleapis.com/oauth2/v3/tokeninfo?id_token='+ data.object.attributes.authData.google.id_token)
-			/** @type {sub: string, email: string, name: string, given_name: string, family_name: string, locale: string, picture: string, verified_email: boolean} */
+			const req = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${data.object.attributes.authData.google.id_token}`)
+			/** @type {{sub: string, email: string, name: string, given_name: string, family_name: string, locale: string, picture: string, verified_email: boolean}} */
 			const res = await req.json()
 
 			Parse.masterKey = process.env.MASTER_KEY
