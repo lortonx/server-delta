@@ -24,4 +24,4 @@ EXPOSE 1337
 
 # VOLUME /parse/cloud               
 
-CMD [ "npm", "start" ]
+CMD [ "npm", "run", "start" ]
