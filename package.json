@@ -12,7 +12,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "start": "node index.js",
+    "start": "node --experimental-specifier-resolution=node index.js",
     "dev": "set NODE_ENV=dev && nodemon --inspect --experimental-specifier-resolution=node index.js",
     "lint": "eslint --cache ./cloud && eslint --cache index.js && eslint --cache ./spec",
     "lint-fix": "eslint --cache --fix ./cloud && eslint --cache --fix index.js && eslint --cache --fix ./spec",
