@@ -1,6 +1,6 @@
 // План использования продукта
 
-import UserSubscription from "./UserSubscription"
+import UserSubscription from "./UserSubscription.js"
 
 const params = {
     // /**@type {import("./Product.js")} */
@@ -8,7 +8,7 @@ const params = {
     /**@type {string} */
     name: '',
     /**@type {Parse.User} */
-    user:null,
+    user: null,
     /** Duration of availibility plan */
     // duration: 0,
     /**@type {"stopped"|"started"} */
@@ -39,46 +39,46 @@ export default class Plan extends Parse.Object {
      */
     static query(user) {
         return new Parse.Query(Plan)
-		.select('name','ds','de','dr')
-		.equalTo('user', user)
+            .select('name', 'ds', 'de', 'dr')
+            .equalTo('user', user)
     }
     /**
      * @param {Parse.User} user
      * @param {'spect1x'|'spect4x'|'spect16x'} name
      */
-    static createRecord(user, name){
-        const availableNames = ['spect1x','spect4x','spect16x']
-		if(!name) throw new Error(`Name "${name}" is not specified`)
-		if(!availableNames.includes(name)) throw new Error(`Name "${name}" is not available`)
-		{
-			const plan = new Plan()
-			plan.init()
-			plan.set('user', user)
-			plan.set('name', name)
+    static createRecord(user, name) {
+        const availableNames = ['spect1x', 'spect4x', 'spect16x']
+        if (!name) throw new Error(`Name "${name}" is not specified`)
+        if (!availableNames.includes(name)) throw new Error(`Name "${name}" is not available`)
+        {
+            const plan = new Plan()
+            plan.init()
+            plan.set('user', user)
+            plan.set('name', name)
             plan.setDuration(0)
             plan.setRemaining(0)
-			plan.start()
+            plan.start()
             return plan
-		}
+        }
     }
     /**
      * @param {Parse.User} user 
      * @param {string} name
      */
     static async getUserPlanByName(user, name) {
-        if(!user) throw new Error('User must be set')
-        if(!name) throw new Error('Name of plan must be set')
+        if (!user) throw new Error('User must be set')
+        if (!name) throw new Error('Name of plan must be set')
         const plan = new Parse.Query(Plan)
-		.select('name','ds','de','dr','user')
-		.equalTo('user', user)
-        .equalTo('name', name)
-        .first()
+            .select('name', 'ds', 'de', 'dr', 'user')
+            .equalTo('user', user)
+            .equalTo('name', name)
+            .first()
         return await plan
     }
     /**
      * @param {UserSubscription} userSubscription 
      */
-    renewAccordingSubscription(userSubscription){
+    renewAccordingSubscription(userSubscription) {
 
     }
     constructor() {
@@ -102,8 +102,8 @@ export default class Plan extends Parse.Object {
         // if(!(this.get('duration') > 0)) throw new Error('"duration" must be greater than 0')
         // if(!(this.get('remaining') > 0)) throw new Error('"remaining" must be greater than 0')
         // if(this.get('status') !== 'stopped') throw new Error('Plan "status" must be "stopped"')
-        if(!this.get('name')) throw new Error('Plan "name" must be set')
-        if(!this.get('user')) throw new Error('Plan "user" must be set')
+        if (!this.get('name')) throw new Error('Plan "name" must be set')
+        if (!this.get('user')) throw new Error('Plan "user" must be set')
         // this.set('status', 'started')
         this.set('ds', new Date())
         // this.set('de', new Date(new Date().getTime() + (this.get('duration') * 1000)))
@@ -111,11 +111,11 @@ export default class Plan extends Parse.Object {
     }
     /** @returns {number} in seconds*/
     getDurationLeft() {
-        return Math.max(0, 0|((this.get('de').getTime() - new Date().getTime()) / 1000))
+        return Math.max(0, 0 | ((this.get('de').getTime() - new Date().getTime()) / 1000))
     }
     /** @returns {number} in seconds*/
     getRemainingLeft() {
-        return Math.max(0, 0|((this.get('dr').getTime() - new Date().getTime()) / 1000))
+        return Math.max(0, 0 | ((this.get('dr').getTime() - new Date().getTime()) / 1000))
     }
     /** @param {number} miliseconds*/
     setDuration(miliseconds) {

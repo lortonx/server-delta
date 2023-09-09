@@ -14,7 +14,7 @@ const params = {
  */
 export default class Subscription extends Parse.Object {
     constructor() {
-        super('Subscription', Object.assign({},params));
+        super('Subscription', Object.assign({}, params));
         /** @type {params} */
         this.attributes
     }
@@ -46,11 +46,11 @@ export default class Subscription extends Parse.Object {
 
 const Schema = new Parse.Schema('Subscription');
 Schema.get().catch(() => {
-    Schema.addString('name', {required: true, defaultValue: 'Subscription Name'})
-    Schema.addNumber('price', {defaultValue: 0})
-    Schema.addString('period', {defaultValue: '1month'})
-    Schema.addString('description', {defaultValue: 'Description'})
-    Schema.addObject('quotas', {defaultValue: {}})
+    Schema.addString('name', { required: true, defaultValue: 'Subscription Name' })
+    Schema.addNumber('price', { defaultValue: 0 })
+    Schema.addString('period', { defaultValue: '1month' })
+    Schema.addString('description', { defaultValue: 'Description' })
+    Schema.addObject('quotas', { defaultValue: {} })
     Schema.save().then(installDepends)
 })
 
@@ -116,7 +116,7 @@ const DefaultSubscriptions = {
 }
 
 const installDepends = async () => {
-    for(const key in DefaultSubscriptions) {
+    for (const key in DefaultSubscriptions) {
         const sub = DefaultSubscriptions[key]
         const subscription = new Subscription();
         subscription.set('name', sub.name)

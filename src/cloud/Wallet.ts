@@ -1,16 +1,21 @@
-import Cart from '../Models/Cart.js';
-import CartItem from '../Models/CartItem.js';
-import Plan from '../Models/Plan.js';
-import Product from '../Models/Product.js';
-import Subscription from '../Models/Subscription.js';
-import UserSubscription from '../Models/UserSubscription.js';
-import Wallet from '../Models/Wallet.js';
+// import Cart from '../../Models/Cart.js';
+// import CartItem from '../../Models/CartItem.js';
+// import Plan from '../../Models/Plan.js';
+// import Product from '../../Models/Product.js';
+// import Subscription from '../../Models/Subscription.js';
+// import UserSubscription from '../../Models/UserSubscription.js';
+// import Wallet from '../../Models/Wallet.js';
+
+import Cart from "../../Models/Cart";
+import CartItem from "../../Models/CartItem";
+import Plan from "../../Models/Plan";
+import Product from "../../Models/Product";
+import Subscription from "../../Models/Subscription";
+import UserSubscription from "../../Models/UserSubscription";
 
 
 class UserWallet {
-	/**
-	 * @param {Parse.User} user 
-	 */
+	user: Parse.User
 	
 	constructor(user) {
 		this.user = user;
@@ -25,6 +30,7 @@ class UserWallet {
 		// })
 		Parse.Cloud.define('getPayLink', async req => {
 			if(!req.user) throw new Error('Not authorized')
+			// @ts-ignore
 			const requestId = req.functionName + req.user.id
 			const { user, params: {objectId, amount} } = req;
 			await this.getPayLink({user, objectId, amount})
@@ -42,6 +48,7 @@ class UserWallet {
 		// })
 		Parse.Cloud.define('getPlans', async req => {
 			if(!req.user) throw new Error('Not authorized')
+			// @ts-ignore
 			const requestId = req.functionName + req.user.id
 			return await this.getPlans(req.user)
 		},{
@@ -49,6 +56,7 @@ class UserWallet {
 		})
 		Parse.Cloud.define('usePlan', async req => {
 			if(!req.user) throw new Error('Not authorized')
+			// @ts-ignore
 			const requestId = req.functionName + req.user.id
 			return await this.usePlan(req.user, req.params.name)
 		},{

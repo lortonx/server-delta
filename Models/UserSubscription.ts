@@ -1,8 +1,8 @@
-import Subscription from "./Subscription";
+import Subscription from "./Subscription.js";
 
 const params = {
     /**@type {Parse.User} */
-    user:null,
+    user: null,
     /**@type {Subscription} */
     sp: null,
     /**@type {Date} */ ds: null,
@@ -21,7 +21,7 @@ const params = {
  */
 export default class UserSubscription extends Parse.Object {
     constructor() {
-        super('UserSubscription', Object.assign({},params));
+        super('UserSubscription', Object.assign({}, params));
         /** @type {params} */
         this.attributes
     }
@@ -31,8 +31,8 @@ export default class UserSubscription extends Parse.Object {
      * @param {Subscription} subscription 
      */
     static createRecord(user, subscription) {
-        if(!user) throw new Error('User param must be set')
-        if(!subscription) throw new Error('Subscription param must be set')
+        if (!user) throw new Error('User param must be set')
+        if (!subscription) throw new Error('Subscription param must be set')
         const record = new UserSubscription()
         record.activate()
         record.set('user', user)
@@ -48,7 +48,7 @@ export default class UserSubscription extends Parse.Object {
     //         .find()
     // }
     activate() {
-        if(this.get('status') == 'active') throw new Error('Subscription "status" already "active"')
+        if (this.get('status') == 'active') throw new Error('Subscription "status" already "active"')
         this.set('status', 'active')
         this.set('ds', new Date())
         // 30 days
@@ -73,20 +73,20 @@ export default class UserSubscription extends Parse.Object {
         // this.save()
     }
     reactivate() {
-        if(this.get('status') !== 'canceled') throw new Error('Subscription "status" must be "canceled"')
+        if (this.get('status') !== 'canceled') throw new Error('Subscription "status" must be "canceled"')
         throw new Error('Not implemented')
     }
 }
 
 const Schema = new Parse.Schema('UserSubscription');
 Schema.get().catch(() => {
-    Schema.addPointer('user', '_User', {required: true})
-    Schema.addPointer('sp', 'Subscription', {required: true})
+    Schema.addPointer('user', '_User', { required: true })
+    Schema.addPointer('sp', 'Subscription', { required: true })
     Schema.addDate('ds') // start
     Schema.addDate('de') // end
     Schema.addDate('dc') // canceled
-    Schema.addBoolean('cde', {defaultValue: false}) // cancel to date end
-    Schema.addString('status',{defaultValue: 'stopped'}) // status
-    Schema.addString('pm', {defaultValue:'none'}) // payment method
+    Schema.addBoolean('cde', { defaultValue: false }) // cancel to date end
+    Schema.addString('status', { defaultValue: 'stopped' }) // status
+    Schema.addString('pm', { defaultValue: 'none' }) // payment method
     Schema.save()
 })

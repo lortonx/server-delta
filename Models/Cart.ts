@@ -15,7 +15,7 @@ const params = {
  */
 export default class Cart extends Parse.Object {
     constructor() {
-        super('Cart', Object.assign({},params));
+        super('Cart', Object.assign({}, params));
         /** @type {params} */
         this.attributes
     }

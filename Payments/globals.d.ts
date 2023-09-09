@@ -2,52 +2,59 @@
  * pi_3L8qNDJEtINljGAa0ukexNuA
  * Events only for Supports and Extras.
  */
-type IBmcTimeFormat = "2022-06-07 15:57:40";
+type IBmcTimeFormat = '2022-06-07 15:57:40';
 type IBmcTimeSeconds = number;
-type IBmcCurrency = "USD" | "EUR"
-type IBmcBoolean = "true" | "false";
-type IBmcHookType = "donation.created" | "donation.refunded" | "extra_purchase.created" | "extra_purchase.refunded" | "membership.started" | "membership.updated" | "membership.cancelled";
-type IBmcObject = "membership" | "payment";
-type IBmcStatus = "succeeded" | "refunded";
+type IBmcCurrency = 'USD' | 'EUR';
+type IBmcBoolean = 'true' | 'false';
+type IBmcHookType =
+    | 'donation.created'
+    | 'donation.refunded'
+    | 'extra_purchase.created'
+    | 'extra_purchase.refunded'
+    | 'membership.started'
+    | 'membership.updated'
+    | 'membership.cancelled';
+type IBmcObject = 'membership' | 'payment';
+type IBmcStatus = 'succeeded' | 'refunded';
 
 interface IBmcHookBase {
-    type: IBmcHookType,
-    live_mode: boolean,
+    type: IBmcHookType;
+    live_mode: boolean;
     /** @example 1 */
-    attempt: number,
-    created: IBmcTimeSeconds,
+    attempt: number;
+    created: IBmcTimeSeconds;
     /** @example 1 */
-    event_id: number,
-    data: {}
+    event_id: number;
+    data: {};
 }
 interface IBmcDonationCreated extends IBmcHookBase {
-    type: "donation.created",
+    type: 'donation.created' | 'donation.refunded';
     data: {
-        id: number,
+        id: number;
         /** @example 5 */
-        amount: number,
-        object: IBmcObject,
-        status: IBmcStatus,
+        amount: number;
+        object: IBmcObject;
+        status: IBmcStatus;
         /** @example "John bought you a coffee" */
-        message: string,
-        currency: IBmcCurrency,
-        refunded: IBmcBoolean,
-        created_at: IBmcTimeSeconds,
-        note_hidden: IBmcBoolean,
-        refunded_at: null,
+        message: string;
+        currency: IBmcCurrency;
+        refunded: IBmcBoolean;
+        created_at: IBmcTimeSeconds;
+        note_hidden: IBmcBoolean;
+        refunded_at: null;
         /** @example "Thanks for the good work" */
-        support_note: string,
-        support_type: "Supporter",
-        supporter_name: "John",
+        support_note: string;
+        support_type: 'Supporter';
+        supporter_name: 'John';
         /** @example "pi_3Mc51bJEtINljGAa0zVykgUE"*/
-        transaction_id: "pi_3Mc51bJEtINljGAa0zVykgUE",
-        application_fee: "0.25",
-        supporter_email: "john@example.com",
-        total_amount_charged: "5.45"
-     }
+        transaction_id: 'pi_3Mc51bJEtINljGAa0zVykgUE';
+        application_fee: '0.25';
+        supporter_email: 'john@example.com';
+        total_amount_charged: '5.45';
+    };
 }
 interface IBmcDonationRefunded extends IBmcDonationCreated {
-    type: "donation.refunded"
+    type: 'donation.refunded';
 }
 interface IBmcPageResponse {
     current_page: number;
@@ -94,14 +101,13 @@ interface IBmcSupport {
     support_visibility: 0 | 1;
     supporter_name: string;
     /** @example "pi_3L712mJEtIsfgdfKIokjYYUofdKuJ" */
-    transaction_id: string | "FREE_REWARD";
+    transaction_id: string | 'FREE_REWARD';
     transfer_id: null | any;
 }
 
 interface BmcSupportersResponse extends IBmcPageResponse {
     data: IBmcSupport[];
 }
-
 
 interface IBmcExtras {
     extra: IBmcExtraData;
@@ -125,7 +131,7 @@ interface IBmcExtraData {
     /** @example "0.00" */
     reward_coffee_price: string;
     /** @example "Congratulations! Your reward will be credited to the account associated with the email you specified" */
-    reward_confirmation_message: string; 
+    reward_confirmation_message: string;
     reward_created_on: IBmcTimeFormat;
     reward_deleted_on: string | null;
     reward_description: string;
@@ -168,14 +174,14 @@ interface IBmcSubscription {
     subscription_currency: string;
     subscription_current_period_end: IBmcTimeFormat;
     subscription_current_period_start: IBmcTimeFormat;
-    subscription_duration_type: "month" | "lifetime-giveaway";
+    subscription_duration_type: 'month' | 'lifetime-giveaway';
     subscription_hidden: 0 | 1;
     subscription_id: number;
     subscription_is_cancelled: string | null;
     subscription_is_cancelled_at_period_end: string | null;
     subscription_message: string | null;
     subscription_updated_on: IBmcTimeFormat;
-    transaction_id: "GIVE_AWAY" | string;
+    transaction_id: 'GIVE_AWAY' | string;
 }
 
 interface IBmcSubscriptionsResponse extends IBmcPageResponse {

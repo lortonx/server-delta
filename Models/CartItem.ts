@@ -3,27 +3,28 @@ const params = {
     /**@type {import("./Product")} */
     product: null,
     /**@type {import("./Cart")} */
-    cart:null,
+    cart: null,
     amount: 0,
     /**@type {Date} */
     createdAt: null,
     /**@type {Date} */
-    updatedAt: null,
-}
+    updatedAt: null
+};
 /**
  * @extends {Parse.Object<params>}
  */
-
 export default class CartItem extends Parse.Object {
     constructor() {
-        super('CartItem', Object.assign({},params));
+        super('CartItem', Object.assign({}, params));
+        /** @type {params} */
+        this.attributes;
     }
 }
 
 const Schema = new Parse.Schema('CartItem');
 Schema.get().catch(() => {
-    Schema.addPointer('product', 'Product')
-    Schema.addPointer('cart', 'Cart')
-    Schema.addNumber('amount')
-    Schema.save()
-})
+    Schema.addPointer('product', 'Product');
+    Schema.addPointer('cart', 'Cart');
+    Schema.addNumber('amount');
+    Schema.save();
+});

@@ -1,19 +1,8 @@
-// const ParseServer = require('parse-server/lib/ParseServer').default;
+import ParseServer from 'parse-server';
 
-// import { ParseServer } from "parse-server";
-import dotenv from 'dotenv';
-Object.assign(process.env, dotenv.config().parsed);
-import ps from 'parse-server';
-const ParseServer =  ps.default
-
-
-// import ps from "parse-server/lib/ParseServer";
-// const ParseServer = ps.default;
-
-
-const databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
+const databaseUri = process.env.DATABASE_URI
 if (!databaseUri) {
-  console.log('> DATABASE_URI not specified, falling back to localhost.');
+  throw Error('DATABASE_URI not specified');
 }
 /** @type {ParseServerOptions} */
 const config = {
@@ -36,5 +25,3 @@ const config = {
 };
 
 export const parseServer = new ParseServer(config);
-
-// /events create -title "@everyopne" -time "in 1 minute" -max 1

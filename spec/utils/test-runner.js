@@ -1,6 +1,6 @@
 const http = require('http');
 const { ParseServer } = require('parse-server');
-const { config, app } = require('../../index.js');
+const { config, app } = require('../../index');
 const Config = require('../../node_modules/parse-server/lib/Config');
 
 let parseServerState = {};
