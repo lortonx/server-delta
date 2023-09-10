@@ -37,10 +37,8 @@ export default class BMC {
         this.cookieJar = new toughCookie.CookieJar();
         this.bmccsrftoken = '572c2a24a9e8ff17f92f61161a93a299';
     }
-    /**
-     * @param {string} string
-     */
-    static normalizeDate(string) {
+
+    static normalizeDate(string: string) {
         let value = null;
         if (string.indexOf('Z') === -1) {
             value = new Date(string).getTime() - new Date().getTimezoneOffset() * 60000;
@@ -52,10 +50,11 @@ export default class BMC {
     static secondsToDate(seconds) {
         return new Date(seconds * 1000);
     }
-    /**
-     * @param {string} string
-     */
-    normalizeDate(string) {
+
+    static istru(value: string | boolean) {
+        return value === 'true';
+    }
+    normalizeDate(string: string) {
         return BMC.normalizeDate(string);
     }
     get_bmccsrftoken(url) {

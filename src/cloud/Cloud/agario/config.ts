@@ -9,4 +9,3 @@ export default {
         return new Date().toISOString();
     }
 };
-console.log('api done2');

@@ -1,21 +1,25 @@
+import { RecordToType } from 'parse-server';
+import UserSchema from '../schema/User.schema';
+
 Parse.User.allowCustomUserClass(true);
 
-export class User extends Parse.User {
-  get defaultCurrency(): string {
-    return this.get('defaultCurrency');
-  }
+type t = RecordToType<typeof UserSchema.fields>;
+export default class User extends Parse.User<t> {
+    get defaultCurrency(): string {
+        return this.get('defaultCurrency');
+    }
 
-  set defaultCurrency(currency: string) {
-    this.set('defaultCurrency', currency);
-  }
+    set defaultCurrency(currency: string) {
+        this.set('defaultCurrency', currency);
+    }
 
-  get locale(): string {
-    return this.get('locale');
-  }
+    get locale(): string {
+        return this.get('locale');
+    }
 
-  set locale(locale: string) {
-    this.set('locale', locale);
-  }
+    set locale(locale: string) {
+        this.set('locale', locale);
+    }
 }
 
 Parse.Object.registerSubclass('_User', User);

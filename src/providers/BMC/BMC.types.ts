@@ -6,7 +6,7 @@ type IBmcTimeFormat = '2022-06-07 15:57:40';
 type IBmcTimeSeconds = number;
 type IBmcCurrency = 'USD' | 'EUR';
 type IBmcBoolean = 'true' | 'false';
-type IBmcHookType =
+export type IBmcHookType =
     | 'donation.created'
     | 'donation.refunded'
     | 'extra_purchase.created'
@@ -41,7 +41,7 @@ export interface IBmcDonationCreated extends IBmcHookBase {
         refunded: IBmcBoolean;
         created_at: IBmcTimeSeconds;
         note_hidden: IBmcBoolean;
-        refunded_at: null;
+        refunded_at: null | number;
         /** @example "Thanks for the good work" */
         support_note: string;
         support_type: 'Supporter';
@@ -53,7 +53,7 @@ export interface IBmcDonationCreated extends IBmcHookBase {
         total_amount_charged: '5.45';
     };
 }
-interface IBmcDonationRefunded extends IBmcDonationCreated {
+export interface IBmcDonationRefunded extends IBmcDonationCreated {
     type: 'donation.refunded';
 }
 export interface IBmcPageResponse {

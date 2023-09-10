@@ -1,10 +1,10 @@
-import 'module-alias/register'
-import express from "express";
-import config from "./parse/config";
-import { dashboard } from "./parse/parse-dashboard";
-import { graphqlServer, parseServer } from "./parse/parse-server";
-import { displayEnvironment, filesCacheControl, handleErrors, requireHTTPS } from "./parse/express-utils";
-import { Cloud, Jobs, Webhooks } from "./cloud/cloud2";
+import 'module-alias/register';
+import express from 'express';
+import config from './parse/config';
+import { dashboard } from './parse/parse-dashboard';
+import { graphqlServer, parseServer } from './parse/parse-server';
+import { displayEnvironment, filesCacheControl, handleErrors, requireHTTPS } from './parse/express-utils';
+import { Cloud, Jobs, Webhooks } from './cloud/cloud2';
 import path from 'path';
 import cors from 'cors';
 
@@ -24,17 +24,21 @@ const start = () => {
     app.use(express.urlencoded({ extended: true }));
     app.use(cors());
     app.use('/public', express.static(path.join(__dirname, '/public')));
-    app.use("/dashboard", dashboard);
+    // @ts-ignore
+    app.use('/dashboard', dashboard);
+    //@ts-ignore
     app.use(config.MOUNT_PATH, parseServer.app);
 
+    //@ts-ignore
     graphqlServer.applyGraphQL(app);
-    parseServer.start()
+    //@ts-ignore
+    parseServer.start();
 
     Cloud.init();
     Jobs.init();
     Webhooks.init(app);
 
-    app.listen(config.PORT, displayEnvironment).on("error", handleErrors);
+    app.listen(config.PORT, displayEnvironment).on('error', handleErrors);
 };
 
 start();

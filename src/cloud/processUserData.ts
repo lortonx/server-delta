@@ -1,5 +1,5 @@
 // @ts-check
-import cloudConfig from './config';
+import cloudConfig from './Cloud/agario/config';
 
 export default cloudConfig;
 Parse.Cloud.define('cloudConfig', (req) => {
@@ -44,7 +44,7 @@ Parse.Cloud.define('processUserData', async (req) => {
     const allUserIds = [];
     const usersToCreate = new Set();
     const usersToUpdate = new Set();
-    for (let key in users) {
+    for (const key in users) {
         allUserIds.push(users[key].guid);
         usersToCreate.add(users[key].guid);
         usersToUpdate.add(users[key].guid);
@@ -58,9 +58,9 @@ Parse.Cloud.define('processUserData', async (req) => {
         { useMasterKey: true }
     );
     // Формирование массива для создания
-    for (let { objectId } of alreadyInDatabaseUsers) usersToCreate.delete(objectId);
+    for (const { objectId } of alreadyInDatabaseUsers) usersToCreate.delete(objectId);
     // Формирование массива для обновления
-    for (let guid of usersToCreate) usersToUpdate.delete(guid);
+    for (const guid of usersToCreate) usersToUpdate.delete(guid);
 
     const outdatedRecords = new Set();
     if (users.length > 1) {
@@ -82,7 +82,7 @@ Parse.Cloud.define('processUserData', async (req) => {
             // @ts-ignore
             { useMasterKey: true }
         );
-        for (let { objectId } of possibleToUpdate) outdatedRecords.add(objectId);
+        for (const { objectId } of possibleToUpdate) outdatedRecords.add(objectId);
     } else {
         const possibleToUpdate = await new Parse.Query(AGUSER).aggregate(
             [
@@ -100,7 +100,7 @@ Parse.Cloud.define('processUserData', async (req) => {
             // @ts-ignore
             { useMasterKey: true }
         );
-        for (let { objectId } of possibleToUpdate) outdatedRecords.add(objectId);
+        for (const { objectId } of possibleToUpdate) outdatedRecords.add(objectId);
         // for(let guid of usersToUpdate) outdatedRecords.add(guid)
     }
     // console.log('step 1',{/*possibleToUpdate, */usersToUpdate, outdatedRecords})
@@ -108,7 +108,7 @@ Parse.Cloud.define('processUserData', async (req) => {
     {
         // CREATE OBJECTS
         const batchedObjects = [];
-        for (let key in users) {
+        for (const key in users) {
             if (!usersToCreate.has(users[key].guid)) continue;
             // @ts-ignore
             const aguser = new AGUser();
@@ -125,7 +125,7 @@ Parse.Cloud.define('processUserData', async (req) => {
         const query = new Parse.Query(AGUSER).limit(1000).skip(0).containedIn('objectId', findArray);
 
         const batchedObjects = await query.find();
-        for (let aguser of batchedObjects) {
+        for (const aguser of batchedObjects) {
             // @ts-ignore
             aguser.set(users[aguser]);
         }

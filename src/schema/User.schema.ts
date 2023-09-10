@@ -1,37 +1,35 @@
-import { SchemaMigrations } from "parse-server";
+import { SchemaMigrations } from 'parse-server';
 
-export default SchemaMigrations.makeSchema("_User", {
+export default SchemaMigrations.makeSchema('_User', {
     fields: {
-        email: { type: "String" },
-        emailVerified: { type: "Boolean" },
-        authData: { type: "Object" },
-        picture: { type: "String" },
-        password: { type: "String" },
-        username: { type: "String" },
-        first_name: { type: "String" },
-        last_name: { type: "String" },
-        defaultCurrency: { type: "String" },
-        locale: { type: "String" },
-        clientKey: { type: "Object" },
+        email: { type: 'String' },
+        emailVerified: { type: 'Boolean' },
+        authData: { type: 'Object' },
+        picture: { type: 'String' },
+        password: { type: 'String' },
+        username: { type: 'String' },
+        first_name: { type: 'String' },
+        last_name: { type: 'String' },
+        defaultCurrency: { type: 'String' },
+        locale: { type: 'String' },
+        clientKey: { type: 'Object' },
+        subscriptions: { type: 'Pointer', required: false, targetClass: 'Subscription' }
     },
     indexes: {
         username: { username: 1 },
         last_name: { last_name: 1 },
-        email: { email: 1 },
+        email: { email: 1 }
     },
     classLevelPermissions: {
         ...SchemaMigrations.CLP.allow({
-            "*": ["create"],
-            requiresAuthentication: ["update", "find", "get", "count"],
-            "role:Moderator": ["get", "find", "count", "update", "delete"],
+            '*': ['create'],
+            requiresAuthentication: ['update', 'find', 'get', 'count'],
+            'role:Moderator': ['get', 'find', 'count', 'update', 'delete']
         }),
         protectedFields: {
-            "*": ["authData", "password", "username", "last_name", "first_name"],
-            "role:Moderator": ["authData", "password"],
-            "role:Administrator": [],
-        },
-    },
-    fieldOptions: {
-        subscriptions: { required: false },
+            '*': ['authData', 'password', 'username', 'last_name', 'first_name'],
+            'role:Moderator': ['authData', 'password'],
+            'role:Administrator': []
+        }
     }
 });

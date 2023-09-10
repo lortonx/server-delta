@@ -1,11 +1,12 @@
-import config from "./config";
-import ParseServer, { ParseGraphQLServer } from "parse-server";
-import logger from "./logger";
-import { schemas } from "../schema";
+import config from './config';
+import ParseServer, { ParseGraphQLServer } from 'parse-server';
+import logger from './logger';
+import { schemas } from '../schema';
+import '../models';
 
 const verbose = config.PARSE_LOG_VERBOSE || false,
     silent = config.PARSE_SILENT || false,
-    logLevel = verbose ? undefined : "error";
+    logLevel = verbose ? undefined : 'error';
 
 const parseServer = new ParseServer({
     appId: config.APP_ID,
@@ -14,7 +15,7 @@ const parseServer = new ParseServer({
     databaseURI: config.DATABASE_URI,
     logLevel: logLevel,
     masterKey: config.MASTER_KEY,
-    maxUploadSize: "5mb",
+    maxUploadSize: '5mb',
     publicServerURL: config.PUBLIC_SERVER_URL,
     serverURL: config.SERVER_URL,
     silent: silent,
@@ -27,7 +28,7 @@ const parseServer = new ParseServer({
     },
     allowOrigin: '*',
     masterKeyIps: ['0.0.0.0/0', '::1'],
-    autostart: false,
+    autostart: false
 });
 
 const graphqlServer = new ParseGraphQLServer(parseServer, { graphQLPath: config.GRAPHQL_MOUNT });
