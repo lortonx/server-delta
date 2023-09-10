@@ -1,7 +1,7 @@
 import config from "./config";
 import ParseServer, { ParseGraphQLServer } from "parse-server";
 import logger from "./logger";
-import { schemas } from "@/schema";
+import { schemas } from "../schema";
 
 const verbose = config.PARSE_LOG_VERBOSE || false,
     silent = config.PARSE_SILENT || false,
@@ -24,7 +24,10 @@ const parseServer = new ParseServer({
     schema: {
         strict: true,
         definitions: schemas
-    }
+    },
+    allowOrigin: '*',
+    masterKeyIps: ['0.0.0.0/0', '::1'],
+    autostart: false,
 });
 
 const graphqlServer = new ParseGraphQLServer(parseServer, { graphQLPath: config.GRAPHQL_MOUNT });

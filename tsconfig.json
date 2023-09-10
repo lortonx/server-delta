@@ -2,19 +2,16 @@
     "compilerOptions": {
         "target": "es2022",
         "module": "node16",
-        "moduleResolution": "node16",
+        "moduleResolution": "Node",
         "outDir": "dist",
         "allowSyntheticDefaultImports": true,
         "sourceMap": true,
         "forceConsistentCasingInFileNames": true,
         "strictNullChecks": false,
         "resolveJsonModule": true,
-        "allowJs": false,
+        "allowJs": true,
         "esModuleInterop": true,
-        "paths": {
-            "@/*": ["./*"]
-        }
     },
-    "lib": ["es2015"],
-    "include": ["./**/*.ts", "./**/*.js"]
+    "include": ["./src/**/*.ts", "./**/*.js"]
 }
+

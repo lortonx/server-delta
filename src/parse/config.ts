@@ -8,20 +8,20 @@ const optional = <T extends string | number | boolean>(name: string, fallback: T
 const required = (name: string): string =>
     process.env[name] || (logger.error("🐛 Missing required env var: " + name), process.exit(1));
 
-const apiMountPath = optional("PARSE_MOUNT", "/api"),
+const apiMountPath = optional("PARSE_MOUNT", "/parse"),
     graphqlMountPath = optional("PARSE_GRAPHQL_MOUNT", "/graphql"),
-    port = optional("PORT", 5000),
+    port = optional("PORT", 1337),
     rootUrl = optional("ROOT_URL", "http://localhost:" + port),
     serverUrl = optional("SERVER_URL", rootUrl + apiMountPath),
     graphqlUrl = optional("GRAPHQL_URL", rootUrl + graphqlMountPath),
     publicServerUrl = optional("PUBLIC_SERVER_URL", serverUrl);
 
 const config = {
-    APP_ID: required("APP_ID"),
-    APPLICATION_NAME: optional("APPLICATION_NAME", "Parse Server"),
+    APP_ID: optional("APP_ID", "myAppId"),
+    APPLICATION_NAME: optional("APPLICATION_NAME", "Delta Backend"),
     DASHBOARD_SECRET: optional("DASHBOARD_SECRET", "asgoyqweotyhq3i4tuhger"),
-    DASHBOARD_USERNAME: required("DASHBOARD_USERNAME"),
-    DASHBOARD_PASSWORD: required("DASHBOARD_PASSWORD"),
+    DASHBOARD_USERNAME: required("DASHBOARD_USERR"),
+    DASHBOARD_PASSWORD: required("DASHBOARD_PASS"),
     DATABASE_URI: optional("DATABASE_URI", "mongodb://localhost/parse-db"),
     MASTER_KEY: required("MASTER_KEY"),
     MOUNT_PATH: apiMountPath,

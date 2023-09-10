@@ -4,17 +4,31 @@ import config from "./parse/config";
 import { dashboard } from "./parse/parse-dashboard";
 import { graphqlServer, parseServer } from "./parse/parse-server";
 import { displayEnvironment, filesCacheControl, handleErrors, requireHTTPS } from "./parse/express-utils";
-import { Cloud, Jobs, Webhooks } from "./cloud/main";
+import { Cloud, Jobs, Webhooks } from "./cloud/cloud2";
+import path from 'path';
+import cors from 'cors';
 
 const start = () => {
     const app = express();
 
-    app.use(requireHTTPS);
+    // app.use(requireHTTPS);
     app.use(filesCacheControl);
+    app.use(
+        express.json({
+            verify: (req, res, buffer) => {
+                // @ts-ignore
+                req.rawBody = buffer;
+            }
+        })
+    );
+    app.use(express.urlencoded({ extended: true }));
+    app.use(cors());
+    app.use('/public', express.static(path.join(__dirname, '/public')));
     app.use("/dashboard", dashboard);
     app.use(config.MOUNT_PATH, parseServer.app);
 
     graphqlServer.applyGraphQL(app);
+    parseServer.start()
 
     Cloud.init();
     Jobs.init();
