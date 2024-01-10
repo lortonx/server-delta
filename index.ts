@@ -110,9 +110,9 @@ const parseServer = ParseServer(config);
 //         return real_resolve.apply(this, arguments);
 //     };
 
-parseServer.start().then(() => {
-    require('./Models/Installer.ts');
-});
+// parseServer.start().then(() => {
+//     import('./Models/Installer');
+// });
 app.use('/parse', parseServer.app);
 // console.log(parseLiveQueryServer)
 // }

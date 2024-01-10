@@ -1,5 +1,5 @@
 // Кошелек пользователя
-import Product from "./Product";
+import Product from './Product';
 
 const params = {
     /**@type {Product} */
@@ -11,28 +11,29 @@ const params = {
     /**@type {Date} */
     createdAt: null,
     /**@type {Date} */
-    updatedAt: null,
-}
+    updatedAt: null
+};
 /**
  * @extends {Parse.Object<params>}
  */
 export default class Wallet extends Parse.Object {
     constructor() {
-        super('Wallet', Object.assign({},params));
+        super('Wallet', Object.assign({}, params));
         /** @type {params} */
-        this.attributes
+        this.attributes;
     }
 }
 
 const Schema = new Parse.Schema('Wallet');
-Schema.get().then(()=>{
-}).catch(() => {
-    Schema.addNumber('amount')
-    Schema.addPointer('user', '_User')
-    Schema.addPointer('product', 'Product')
-    
-    Schema.save()
-})
+Schema.get()
+    .then(() => {})
+    .catch(() => {
+        Schema.addNumber('amount');
+        Schema.addPointer('user', '_User');
+        Schema.addPointer('product', 'Product');
+
+        Schema.save();
+    });
 
 // /** @type {<T>(x: T, y: T): keyof T} */
 // function getKey(x, y) {
