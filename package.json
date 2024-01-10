@@ -8,7 +8,7 @@
     },
     "license": "MIT",
     "scripts": {
-        "start": "ts-node index.ts",
+        "start": "node --max_old_space_size=8192 -r ts-node/register ./index.ts",
         "devts": "nodemon ./index.ts --inspect=9032",
         "devts2": "nodemon ./src/index.ts --inspect=9032",
         "dev": "set NODE_ENV=dev && nodemon --inspect --experimental-specifier-resolution=node index.js",
