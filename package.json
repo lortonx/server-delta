@@ -43,7 +43,9 @@
         "parse-server": "^6.2.2",
         "tinyduration": "^3.3.0",
         "tough-cookie": "^4.0.0",
-        "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.15.0"
+        "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.15.0",
+    
+        "ts-node": "^10.9.2"
     },
     "engines": {
         "node": ">=12.22.10 <19"
@@ -65,7 +67,6 @@
         "jasmine": "3.6.4",
         "mongodb-runner": "4.8.1",
         "prettier": "3.0.3",
-        "ts-node": "^10.9.2",
         "typescript": "^5.2.2",
         "webpack": "^5.88.2",
         "webpack-cli": "^5.1.4",
