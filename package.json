@@ -8,7 +8,7 @@
     },
     "license": "MIT",
     "scripts": {
-        "start": "node --experimental-specifier-resolution=node index.js",
+        "start": "ts-node --experimental-specifier-resolution=node index.ts",
         "devts": "nodemon ./index.ts --inspect=9032",
         "devts2": "nodemon ./src/index.ts --inspect=9032",
         "dev": "set NODE_ENV=dev && nodemon --inspect --experimental-specifier-resolution=node index.js",

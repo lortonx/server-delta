@@ -56,6 +56,7 @@ Parse.Cloud.beforeSave('_User', async function (data) {
                     { $project: { _id: 0 } }
                 ] /*,{ useMasterKey: true }*/
             );
+
             const login_counter = alreadyInDatabase[0]?.total || 0;
             user.set('username', res.given_name + '_' + (login_counter + 1));
             user.set('first_name', res.given_name);
