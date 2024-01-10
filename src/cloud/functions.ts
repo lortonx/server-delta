@@ -26,7 +26,7 @@ Parse.Cloud.beforeLogin((data) => {
     return;
 });
 Parse.Cloud.afterLogin(() => {
-    console.log('after login', Parse.User.current());
+    console.log('after login2', Parse.User.current());
 });
 
 Parse.Cloud.beforeSave('_User', async function (data) {
