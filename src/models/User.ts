@@ -1,9 +1,9 @@
 import { RecordToType } from 'parse-server';
-import UserSchema from '../schema/User.schema';
+import schema from '../schema/User.schema';
 
 Parse.User.allowCustomUserClass(true);
 
-type t = RecordToType<typeof UserSchema.fields>;
+type t = RecordToType<typeof schema.fields>;
 export default class User extends Parse.User<t> {
     get defaultCurrency(): string {
         return this.get('defaultCurrency');

@@ -1,4 +1,6 @@
 import { SchemaMigrations } from 'parse-server';
+import User from '../models/User';
+import BmcSupport from '../../Models/BmcSupport';
 
 export default SchemaMigrations.makeSchema('BmcDonation', {
     fields: {
@@ -18,9 +20,9 @@ export default SchemaMigrations.makeSchema('BmcDonation', {
         application_fee: { type: 'Number' },
         supporter_email: { type: 'String' },
         total_amount_charged: { type: 'Number', defaultValue: 0 },
-        support: { type: 'Pointer', targetClass: 'BmcSupport' },
-        usedAt: { type: 'Date' },
-        usedBy: { type: 'Pointer', targetClass: '_User' }
+        support: { type: 'Pointer', targetClass: 'BmcSupport', p: <BmcSupport>null },
+        usedBy: { type: 'Pointer', targetClass: '_User', p: <User>null },
+        usedAt: { type: 'Date' }
     },
     indexes: {
         supporter_email: { supporter_email: 1 }
@@ -31,22 +33,3 @@ export default SchemaMigrations.makeSchema('BmcDonation', {
         })
     }
 });
-
-// class Monster extends Parse.Object {
-//     constructor() {
-//       // Pass the ClassName to the Parse.Object constructor
-//       super('Monster');
-//       // All other initialization
-//       this.sound = 'Rawr';
-//     }
-
-//     hasSuperHumanStrength() {
-//       return this.get('strength') > 18;
-//     }
-
-//     static spawn(strength) {
-//       const monster = new Monster();
-//       monster.set('strength', strength);
-//       return monster;
-//     }
-//   }

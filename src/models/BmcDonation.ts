@@ -1,15 +1,16 @@
 import { RecordToType } from 'parse-server';
 import { IBmcDonationCreated, IBmcDonationRefunded } from '../providers/BMC/BMC.types';
-import BmcEventSchema from '../schema/BmcDonation.schema';
+import schema from '../schema/BmcDonation.schema';
 import BMC from '../providers/BMC/BMC';
 
-type t = RecordToType<typeof BmcEventSchema.fields>;
+type t = RecordToType<typeof schema.fields>;
+const className = 'BmcDonation';
 export default class BmcDonation extends Parse.Object<t> {
     constructor() {
-        super('BmcDonation', {});
+        super(className, {});
     }
 
-    findUserByEmail(email) {
+    findUserByEmail(email: string) {
         return new Parse.Query(Parse.User).equalTo('email', email).first({ useMasterKey: true });
     }
     // findMyExtra() {
@@ -53,4 +54,4 @@ export default class BmcDonation extends Parse.Object<t> {
     }
 }
 
-Parse.Object.registerSubclass('BmcDonation', BmcDonation);
+Parse.Object.registerSubclass(className, BmcDonation);

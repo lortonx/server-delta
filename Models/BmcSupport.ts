@@ -40,9 +40,6 @@ const params = {
     /** @type {Parse.User=} */
     user: undefined
 };
-/**
- * @extends {Parse.Object<params>}
- */
 export default class BmcSupport extends Parse.Object {
     constructor() {
         // @ts-ignore

@@ -1,5 +1,5 @@
 // @ts-check
-import cloudConfig from './Cloud/agario/config';
+import cloudConfig from './Agario/config';
 
 export default cloudConfig;
 Parse.Cloud.define('cloudConfig', (req) => {

@@ -26,7 +26,8 @@ export default SchemaMigrations.makeSchema('aguser', {
     indexes: {
         displayName: { displayName: 1 },
         played: { played: 1 },
-        score: { score: 1 }
+        score: { score: 1 },
+        guid: { guid: 1 }
     },
     classLevelPermissions: {
         ...SchemaMigrations.CLP.allow({

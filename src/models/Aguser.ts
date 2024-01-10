@@ -1,11 +1,12 @@
 import { RecordToType } from 'parse-server';
-import AgUserSchema from '../schema/AgUser.schema';
+import schema from '../schema/AgUser.schema';
 
-type t = RecordToType<typeof AgUserSchema.fields>;
+type t = RecordToType<typeof schema.fields>;
+const className = 'aguser';
 export default class Aguser extends Parse.Object<t> {
     constructor() {
-        super('aguser', {});
+        super(className, {});
     }
 }
 
-Parse.Object.registerSubclass('aguser', Aguser);
+Parse.Object.registerSubclass(className, Aguser);

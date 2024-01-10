@@ -7,8 +7,8 @@ const params = {
     /**@type {Object} */ quotas: {},
 
     /**@type {Date} */ startedAt: null,
-    /**@type {Date} */ expirationAt: null,
-}
+    /**@type {Date} */ expirationAt: null
+};
 /**
  * @extends {Parse.Object<params>}
  */
@@ -16,7 +16,7 @@ export default class Subscription extends Parse.Object {
     constructor() {
         super('Subscription', Object.assign({}, params));
         /** @type {params} */
-        this.attributes
+        this.attributes;
     }
     // start() {
     //     if(!(this.get('duration') > 0)) throw new Error('"Duration" must be greater than 0')
@@ -46,84 +46,83 @@ export default class Subscription extends Parse.Object {
 
 const Schema = new Parse.Schema('Subscription');
 Schema.get().catch(() => {
-    Schema.addString('name', { required: true, defaultValue: 'Subscription Name' })
-    Schema.addNumber('price', { defaultValue: 0 })
-    Schema.addString('period', { defaultValue: '1month' })
-    Schema.addString('description', { defaultValue: 'Description' })
-    Schema.addObject('quotas', { defaultValue: {} })
-    Schema.save().then(installDepends)
-})
-
+    Schema.addString('name', { required: true, defaultValue: 'Subscription Name' });
+    Schema.addNumber('price', { defaultValue: 0 });
+    Schema.addString('period', { defaultValue: '1month' });
+    Schema.addString('description', { defaultValue: 'Description' });
+    Schema.addObject('quotas', { defaultValue: {} });
+    Schema.save().then(installDepends);
+});
 
 const DefaultSubscriptions = {
-    'free': {
+    free: {
         name: 'free',
         price: 0,
         period: 'infinity',
         quotas: {
-            'spect1x': {
+            spect1x: {
                 remaining: 1000 * 60 * 60 * 20,
                 duration: 1000 * 60 * 60 * 1
             },
-            'spect4x': {
+            spect4x: {
                 remaining: 1000 * 60 * 60 * 20,
-                duration: 1000 * 60 * 20,
+                duration: 1000 * 60 * 20
             },
-            'spect16x': {
+            spect16x: {
                 remaining: 1000 * 60 * 60 * 20,
-                duration: 1000 * 60 * 5,
-            },
-        },
+                duration: 1000 * 60 * 5
+            }
+        }
     },
-    'pro': {
+    pro: {
         name: 'pro',
         price: 10,
         period: '1month',
         quotas: {
-            'spect1x': {
+            spect1x: {
                 remaining: 1000 * 60 * 60 * 20,
                 duration: 1000 * 60 * 60 * 10
             },
-            'spect4x': {
+            spect4x: {
                 remaining: 1000 * 60 * 60 * 20,
-                duration: 1000 * 60 * 60 * 4,
+                duration: 1000 * 60 * 60 * 4
             },
-            'spect16x': {
+            spect16x: {
                 remaining: 1000 * 60 * 60 * 20,
-                duration: 1000 * 60 * 60 * 1,
-            },
-        },
+                duration: 1000 * 60 * 60 * 1
+            }
+        }
     },
-    'vip': {
+    vip: {
         name: 'vip',
         price: 20,
         period: '1month',
         quotas: {
-            'spect1x': {
+            spect1x: {
                 remaining: 1000 * 60 * 60 * 20,
                 duration: 1000 * 60 * 60 * 20
             },
-            'spect4x': {
+            spect4x: {
                 remaining: 1000 * 60 * 60 * 20,
-                duration: 1000 * 60 * 60 * 20,
+                duration: 1000 * 60 * 60 * 20
             },
-            'spect16x': {
+            spect16x: {
                 remaining: 1000 * 60 * 60 * 8,
-                duration: 1000 * 60 * 60 * 4,
-            },
-        },
-    },
-}
+                duration: 1000 * 60 * 60 * 4
+            }
+        }
+    }
+};
 
 const installDepends = async () => {
     for (const key in DefaultSubscriptions) {
-        const sub = DefaultSubscriptions[key]
+        const sub = DefaultSubscriptions[key];
         const subscription = new Subscription();
-        subscription.set('name', sub.name)
-        subscription.set('price', sub.price)
-        subscription.set('period', sub.period)
-        subscription.set('description', sub.description)
-        subscription.set('quotas', sub.quotas)
-        await subscription.save()
+        subscription.set('name', sub.name);
+        subscription.set('price', sub.price);
+        subscription.set('period', sub.period);
+        subscription.set('description', sub.description);
+        subscription.set('quotas', sub.quotas);
+        await subscription.save();
     }
-}
+};

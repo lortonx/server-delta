@@ -1,17 +1,22 @@
-import Aguser from '../../../models/Aguser';
+import Aguser from '../../models/Aguser';
 import cloudConfig from './config';
-
-Parse.Cloud.define('cloudConfig', () => {
-    return cloudConfig;
-});
+Parse.Cloud.define(
+    'cloudConfig',
+    () => {
+        return cloudConfig;
+    },
+    {
+        requireUser: false
+    }
+);
 
 // const Aguser = 'aguser';
 
 Parse.Cloud.define('processUserData', async (req) => {
     const users = req.params;
     const allUserIds = [];
-    const usersToCreate = new Set();
-    const usersToUpdate = new Set();
+    const usersToCreate = new Set<string>();
+    const usersToUpdate = new Set<string>();
     for (const key in users) {
         allUserIds.push(users[key].guid);
         usersToCreate.add(users[key].guid);
@@ -30,7 +35,7 @@ Parse.Cloud.define('processUserData', async (req) => {
     // Формирование массива для обновления
     for (const guid of usersToCreate) usersToUpdate.delete(guid);
 
-    const outdatedRecords = new Set();
+    const outdatedRecords = new Set<string>();
     if (users.length > 1) {
         const possibleToUpdate = await new Parse.Query(Aguser).aggregate([
             {
@@ -67,7 +72,7 @@ Parse.Cloud.define('processUserData', async (req) => {
 
     {
         // CREATE OBJECTS
-        const batchedObjects = [];
+        const batchedObjects: Aguser[] = [];
         for (const key in users) {
             if (!usersToCreate.has(users[key].guid)) continue;
             // @ts-ignore

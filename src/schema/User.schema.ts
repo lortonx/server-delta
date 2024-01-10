@@ -1,4 +1,6 @@
 import { SchemaMigrations } from 'parse-server';
+import Subscription from '../models/Subscription';
+// depedencies
 
 export default SchemaMigrations.makeSchema('_User', {
     fields: {
@@ -13,7 +15,7 @@ export default SchemaMigrations.makeSchema('_User', {
         defaultCurrency: { type: 'String' },
         locale: { type: 'String' },
         clientKey: { type: 'Object' },
-        subscriptions: { type: 'Pointer', required: false, targetClass: 'Subscription' }
+        subscriptions: { type: 'Relation', required: false, targetClass: 'Subscription', p: <Subscription>null }
     },
     indexes: {
         username: { username: 1 },

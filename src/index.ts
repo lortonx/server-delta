@@ -4,9 +4,11 @@ import config from './parse/config';
 import { dashboard } from './parse/parse-dashboard';
 import { graphqlServer, parseServer } from './parse/parse-server';
 import { displayEnvironment, filesCacheControl, handleErrors, requireHTTPS } from './parse/express-utils';
+import ParseServer from 'parse-server';
 import { Cloud, Jobs, Webhooks } from './cloud/cloud2';
 import path from 'path';
 import cors from 'cors';
+import logger from './parse/logger';
 
 const start = () => {
     const app = express();
@@ -24,21 +26,25 @@ const start = () => {
     app.use(express.urlencoded({ extended: true }));
     app.use(cors());
     app.use('/public', express.static(path.join(__dirname, '/public')));
-    // @ts-ignore
     app.use('/dashboard', dashboard);
     //@ts-ignore
     app.use(config.MOUNT_PATH, parseServer.app);
 
     //@ts-ignore
     graphqlServer.applyGraphQL(app);
+
     //@ts-ignore
-    parseServer.start();
+    parseServer.start().then(() => {
+        logger.info('Parse Server started successfully');
+    });
 
     Cloud.init();
     Jobs.init();
     Webhooks.init(app);
 
-    app.listen(config.PORT, displayEnvironment).on('error', handleErrors);
+    const server = app.listen(config.PORT, displayEnvironment).on('error', handleErrors);
+
+    ParseServer.createLiveQueryServer(server);
 };
 
 start();

@@ -5,7 +5,6 @@ export class Cloud {
         Parse.Cloud.define('threadTest', () => {
             return 'test';
         });
-        import('./Cloud/agario/index');
     }
 }
 
@@ -14,7 +13,9 @@ export class Webhooks {
         app.post('/webhooks/test', raw({ type: 'application/json' }), (request: Request, response: Response) => {
             response.status(200).json({});
         });
-        import('./WebHook/bmc/index').then((m) => m.default.init(app));
+        import('./BuyMeCoffee/index').then((m) => m.default.init(app));
+        import('./Agario/index');
+        import('./Auth/index');
     }
 }
 

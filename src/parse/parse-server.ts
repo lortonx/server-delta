@@ -1,5 +1,5 @@
 import config from './config';
-import ParseServer, { ParseGraphQLServer } from 'parse-server';
+import ParseServer, { ParseGraphQLServer, SchemaMigrations } from 'parse-server';
 import logger from './logger';
 import { schemas } from '../schema';
 import '../models';
@@ -25,10 +25,13 @@ const parseServer = new ParseServer({
     schema: {
         strict: true,
         definitions: schemas
-    },
+    } as SchemaMigrations.SchemaOptions,
     allowOrigin: '*',
     masterKeyIps: ['0.0.0.0/0', '::1'],
-    autostart: false
+    autostart: false,
+    liveQuery: {
+        classNames: ['Plan', 'Comments', 'GameScore', 'MonitorRestrictionRules', 'Product', 'UserSubscription'] // List of classes to support for query subscriptions
+    }
 });
 
 const graphqlServer = new ParseGraphQLServer(parseServer, { graphQLPath: config.GRAPHQL_MOUNT });

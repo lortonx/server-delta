@@ -9,7 +9,7 @@ import http from 'http';
 // @ts-ignore
 import cors from 'cors';
 import express from 'express';
-
+// @ts-ignore
 import { ParseServer, ParseGraphQLServer } from 'parse-server';
 import ParseDashboard from 'parse-dashboard';
 import BMC from './Payments/BMC';
@@ -176,4 +176,3 @@ const srv = {
     api: API
 };
 global.srv = srv;
-debugger

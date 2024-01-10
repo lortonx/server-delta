@@ -10,19 +10,21 @@
     "typescript.tsdk": "node_modules\\typescript\\lib",
     "editor.formatOnSave": true,
     "eslint.format.enable": true,
-    "editor.codeActionsOnSave": { "source.fixAll.eslint": true },
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
     "eslint.workingDirectories": [{ "mode": "auto" }],
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.codeActionsOnSave": {
-            "source.fixAll.eslint": true
+            "source.fixAll.eslint": "explicit"
         }
     },
     "[javascript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.codeActionsOnSave": {
-            "source.fixAll.eslint": false
+            "source.fixAll.eslint": "never"
         }
     },
     "typescript.tsserver.experimental.enableProjectDiagnostics": false

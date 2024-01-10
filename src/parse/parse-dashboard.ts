@@ -1,5 +1,5 @@
-import config from "./config";
-import ParseDashboard from "parse-dashboard";
+import config from './config';
+import ParseDashboard from 'parse-dashboard';
 
 const dashboardConfig = {
     apps: [
@@ -8,24 +8,24 @@ const dashboardConfig = {
             appName: config.APPLICATION_NAME,
             masterKey: config.MASTER_KEY,
             serverURL: config.SERVER_URL,
-            graphQLServerURL: config.GRAPHQL_URL,
-        },
+            graphQLServerURL: config.GRAPHQL_URL
+        }
     ],
     port: config.PORT,
     trustProxy: 1,
     users: [
         {
             user: config.DASHBOARD_USERNAME,
-            pass: config.DASHBOARD_PASSWORD,
-        },
-    ],
+            pass: config.DASHBOARD_PASSWORD
+        }
+    ]
 };
 
 const dashboardOptions = {
     options: {
         allowInsecureHTTP: false,
-        cookieSessionSecret: config.DASHBOARD_SECRET,
-    },
+        cookieSessionSecret: config.DASHBOARD_SECRET
+    }
 };
 
 // Dashboard configuration
