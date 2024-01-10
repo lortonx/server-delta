@@ -31,3 +31,5 @@ node_modules
 # Emacs
 *~
 .eslintcache
+
+dist

@@ -47,7 +47,7 @@ export default class BMC {
         }
         return new Date(value);
     }
-    static secondsToDate(seconds) {
+    static secondsToDate(seconds: number) {
         return new Date(seconds * 1000);
     }
 
@@ -60,8 +60,8 @@ export default class BMC {
     get_bmccsrftoken(url) {
         // return '572c2a24a9e8ff17f92f61161a93a299'
         return new Promise((resolve) => {
-            this.cookieJar.getCookies(url, {}, (err, cookies) => {
-                const key = cookies.find((cookie) => {
+            this.cookieJar.getCookies(url, {}, (err: any, cookies: any) => {
+                const key = cookies.find((cookie: any) => {
                     return cookie.key === 'bmccsrftoken';
                 });
                 console.log(key, cookies);
@@ -74,8 +74,8 @@ export default class BMC {
 
     getCookie(url) {
         return new Promise((resolve) => {
-            this.cookieJar.getCookies(url, {}, (err, cookies) => {
-                const string = cookies.map((cookie) => cookie.cookieString()).join(';');
+            this.cookieJar.getCookies(url, {}, (err: any, cookies: any) => {
+                const string = cookies.map((cookie: any) => cookie.cookieString()).join(';');
                 resolve(string);
             });
             // bmc_csrf_token:
@@ -117,7 +117,7 @@ export default class BMC {
      * @param {number} id
      * @returns {Promise<import('axios').AxiosResponse & {data: IBmcSupport}>}
      */
-    getSupportById(id) {
+    getSupportById(id: number) {
         if (id == undefined) throw new Error('Argument "id" is required');
         return this._sendRequest(`supporters/${id}`);
     }
@@ -125,7 +125,7 @@ export default class BMC {
      * @param {number} id
      * @returns {Promise<import('axios').AxiosResponse & {data: IBmcSubscription}>}
      */
-    getSubscriptionById(id) {
+    getSubscriptionById(id: number) {
         if (id == undefined) throw new Error('Argument "id" is required');
         return this._sendRequest(`subscriptions/${id}`);
     }
@@ -163,7 +163,7 @@ export default class BMC {
      * @param {string} BMC_WEBHOOK_SECRET  webhook secret from bmc
      * @returns {boolean}
      */
-    static verifyWebhook(bodyString, header_signature, BMC_WEBHOOK_SECRET) {
+    static verifyWebhook(bodyString: string, header_signature: string, BMC_WEBHOOK_SECRET: string) {
         const signature = cryptoJs.HmacSHA256(bodyString, BMC_WEBHOOK_SECRET).toString();
         return signature === header_signature;
     }
@@ -182,7 +182,7 @@ export default class BMC {
             })
                 .then((res) => {
                     let count = null;
-                    res.data.replace(/>(\d+) supporters<\/div>/, ($0, $1) => {
+                    res.data.replace(/>(\d+) supporters<\/div>/, ($0: number, $1: number) => {
                         count = $1;
                     });
                     if (count == null) throw new Error("Can't find supporters count. Probably regexp is broken");

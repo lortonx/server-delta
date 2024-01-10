@@ -1,5 +1,7 @@
 import { Request, Response, Application, raw } from 'express';
-
+import './Agario/index';
+import './Auth/index';
+import BMCWebhooks from './BuyMeCoffee/index';
 export class Cloud {
     static async init(): Promise<void> {
         Parse.Cloud.define('threadTest', () => {
@@ -13,9 +15,9 @@ export class Webhooks {
         app.post('/webhooks/test', raw({ type: 'application/json' }), (request: Request, response: Response) => {
             response.status(200).json({});
         });
-        import('./BuyMeCoffee/index').then((m) => m.default.init(app));
-        import('./Agario/index');
-        import('./Auth/index');
+        BMCWebhooks.init(app);
+        // import('./Agario/index');
+        // import('./Auth/index');
     }
 }
 

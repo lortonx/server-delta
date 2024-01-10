@@ -2,8 +2,8 @@ import { Application, raw } from 'express';
 import BMC from '../../../Payments/BMC';
 import config from '../../parse/config';
 import { IBmcDonationCreated, IBmcHookBase, IBmcHookType } from '../../providers/BMC/BMC.types';
-import BmcDonation from '../../models/BmcDonation';
-BmcDonation;
+import '../../models/BmcDonation';
+
 export default class Webhooks {
     static async init(app: Application): Promise<void> {
         app.post('/webhook/BmcHook/', raw({ type: 'application/json' }), (req, res) => {

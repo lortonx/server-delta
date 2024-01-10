@@ -13,7 +13,7 @@ export default class Api {
     /**
      * @param {IBmcHookBase} event
      */
-    async handleBmcEvent(event) {
+    async handleBmcEvent(event: Record<string, any>) {
         if (!event || !event.data) throw new Error('Bmc event is empty');
 
         if (event.type in this) {
@@ -109,7 +109,7 @@ export default class Api {
      */
     async syncBmcSupports(syncOnlyLatest = true, perIteration = (supports_page) => {}) {
         /** @type {BmcSupport[]} */
-        let addedObjects = [];
+        const addedObjects = [];
         /**@param {IBmcSupport[]} supports*/
         const per_page_iteration = async (supports) => {
             const to_create = new Set(supports.map((support) => support.support_id));
@@ -123,7 +123,7 @@ export default class Api {
             alreadyInDatabaseUsers.forEach((support) => to_create.delete(support.support_id));
 
             /** @type {BmcSupport[]} */
-            let addedInIterationObjects = [];
+            const addedInIterationObjects = [];
             for (const support of supports) {
                 if (!to_create.has(support.support_id)) continue;
                 const bmcSupport = new BmcSupport();
@@ -144,7 +144,7 @@ export default class Api {
         let all = [];
 
         let last_page = 1;
-        let max_page = Infinity;
+        const max_page = Infinity;
         for (let current_page = 1; current_page <= last_page; current_page++) {
             if (current_page > max_page) break;
             const response = await BMC.Supporters(current_page);
@@ -179,11 +179,11 @@ export default class Api {
      */
     async syncBmcExtras(syncOnlyLatest = true, perIteration = (extras_page) => {}) {
         /** @type {BmcExtra[]} */
-        let addedObjects = [];
+        const addedObjects = [];
 
         /**@param {IBmcExtras[]} extras*/
         const per_page_iteration = async (extras) => {
-            /** @type {BmcExtra[]} */ let addedInIterationObjects = [];
+            /** @type {BmcExtra[]} */ const addedInIterationObjects = [];
             /** @type {Set<number>}*/ const to_create = new Set();
             extras.forEach((extra) => to_create.add(extra.purchase_id));
             /** @type {Array<{purchase_id: number}>}*/
@@ -211,7 +211,7 @@ export default class Api {
         /** @type {IBmcExtras[]} */
         let all = [];
         let last_page = 1;
-        let max_page = Infinity;
+        const max_page = Infinity;
         for (let current_page = 1; current_page <= last_page; current_page++) {
             if (current_page > max_page) break;
             const response = await BMC.Extras(current_page);

@@ -6,228 +6,237 @@
 // import UserSubscription from '../../Models/UserSubscription.js';
 // import Wallet from '../../Models/Wallet.js';
 
-import Cart from "../../Models/Cart";
-import CartItem from "../../Models/CartItem";
-import Plan from "../../Models/Plan";
-import Product from "../../Models/Product";
-import Subscription from "../../Models/Subscription";
-import UserSubscription from "../../Models/UserSubscription";
-
+import { User } from 'parse';
+import Cart from '../../Models/Cart';
+import CartItem from '../../Models/CartItem';
+import Plan from '../../Models/Plan';
+import Product from '../../Models/Product';
+import Subscription from '../../Models/Subscription';
+import UserSubscription from '../../Models/UserSubscription';
 
 class UserWallet {
-	user: Parse.User
-	
-	constructor(user) {
-		this.user = user;
-		// Parse.Cloud.define('addProduct', async req => {
-		// 	if(!req.user) throw new Error('Not authorized')
-		// 	const requestId = req.functionName + req.user.id
-		// 	const { user, params: {productId, amount} } = req;
-		// 	await this.addProduct({user, productId, amount})
-		// },{
-		// 	fields : ['productId', 'amount'],
-		// 	requireUser: true
-		// })
-		Parse.Cloud.define('getPayLink', async req => {
-			if(!req.user) throw new Error('Not authorized')
-			// @ts-ignore
-			const requestId = req.functionName + req.user.id
-			const { user, params: {objectId, amount} } = req;
-			await this.getPayLink({user, objectId, amount})
-		},{
-			fields : ['objectId'],
-		})
-		// Parse.Cloud.define('addPlan', async req => {
-		// 	if(!req.user) throw new Error('Not authorized')
-		// 	const requestId = req.functionName + req.user.id
-		// 	// const { user, params: {productId, duration} } = req;
-		// 	await this.addPlan(req.user, req.params.name, req.params.duration, req.params.remaining)
-		// },{
-		// 	fields : ['name', 'duration','remaining'],
-		// 	requireUser: true
-		// })
-		Parse.Cloud.define('getPlans', async req => {
-			if(!req.user) throw new Error('Not authorized')
-			// @ts-ignore
-			const requestId = req.functionName + req.user.id
-			return await this.getPlans(req.user)
-		},{
-			requireUser: true
-		})
-		Parse.Cloud.define('usePlan', async req => {
-			if(!req.user) throw new Error('Not authorized')
-			// @ts-ignore
-			const requestId = req.functionName + req.user.id
-			return await this.usePlan(req.user, req.params.name)
-		},{
-			fields : ['name'],
-			requireUser: true
-		})
+    user: Parse.User;
 
-		Parse.Cloud.define('createUserSubscription', async req => {
-			// if(!req.user) throw new Error('Not authorized')
-			// const requestId = req.functionName + req.user.id
-			return await this.createUserSubscription(req.params.userId, req.params.planId)
-		},{
-			fields : ['userId', 'planId'],
-			requireUser: true,
-			requireAnyUserRoles: ['Administrator']
-		})
-	}
-	// /**
-	//  * @param {Parse.User} param.user
-	//  * @param {string} param.productId
-	//  * @param {number} param.amount 
-	//  */
-	// async addProduct({user, productId, amount}) {
-	// 	const product = await new Parse.Query(Product).equalTo('objectId', productId).first()
-	// 	if(!product) throw new Error(`Product ${productId} not found`)
+    constructor(user: User) {
+        this.user = user;
+        // Parse.Cloud.define('addProduct', async req => {
+        // 	if(!req.user) throw new Error('Not authorized')
+        // 	const requestId = req.functionName + req.user.id
+        // 	const { user, params: {productId, amount} } = req;
+        // 	await this.addProduct({user, productId, amount})
+        // },{
+        // 	fields : ['productId', 'amount'],
+        // 	requireUser: true
+        // })
+        Parse.Cloud.define(
+            'getPayLink',
+            async (req) => {
+                if (!req.user) throw new Error('Not authorized');
+                // @ts-ignore
+                const requestId = req.functionName + req.user.id;
+                const {
+                    user,
+                    params: { objectId, amount }
+                } = req;
+                await this.getPayLink({ user, objectId, amount });
+            },
+            {
+                fields: ['objectId']
+            }
+        );
+        // Parse.Cloud.define('addPlan', async req => {
+        // 	if(!req.user) throw new Error('Not authorized')
+        // 	const requestId = req.functionName + req.user.id
+        // 	// const { user, params: {productId, duration} } = req;
+        // 	await this.addPlan(req.user, req.params.name, req.params.duration, req.params.remaining)
+        // },{
+        // 	fields : ['name', 'duration','remaining'],
+        // 	requireUser: true
+        // })
+        Parse.Cloud.define(
+            'getPlans',
+            async (req) => {
+                if (!req.user) throw new Error('Not authorized');
+                // @ts-ignore
+                const requestId = req.functionName + req.user.id;
+                return await this.getPlans(req.user);
+            },
+            {
+                requireUser: true
+            }
+        );
+        Parse.Cloud.define(
+            'usePlan',
+            async (req) => {
+                if (!req.user) throw new Error('Not authorized');
+                // @ts-ignore
+                const requestId = req.functionName + req.user.id;
+                return await this.usePlan(req.user, req.params.name);
+            },
+            {
+                fields: ['name'],
+                requireUser: true
+            }
+        );
 
-	// 	let productWallet = await new Parse.Query(Wallet)
-	// 		.equalTo('user', user)
-	// 		.equalTo('product', product)
-	// 		.first();
+        Parse.Cloud.define(
+            'createUserSubscription',
+            async (req) => {
+                // if(!req.user) throw new Error('Not authorized')
+                // const requestId = req.functionName + req.user.id
+                await this.createUserSubscription(req.params.userId, req.params.planId);
+                return;
+            },
+            {
+                fields: ['userId', 'planId'],
+                requireUser: true,
+                requireAnyUserRoles: ['Administrator']
+            }
+        );
+    }
+    // /**
+    //  * @param {Parse.User} param.user
+    //  * @param {string} param.productId
+    //  * @param {number} param.amount
+    //  */
+    // async addProduct({user, productId, amount}) {
+    // 	const product = await new Parse.Query(Product).equalTo('objectId', productId).first()
+    // 	if(!product) throw new Error(`Product ${productId} not found`)
 
-	// 	if(!productWallet) {
-	// 		productWallet = new Wallet()
-	// 		productWallet.set('user', user)
-	// 		productWallet.set('product', product)
-	// 		productWallet.set('amount', 0)
-	// 	}
-	// 	if(productWallet.get('amount') + amount > 0){
-	// 		if(amount > 0) productWallet.increment('amount', amount)
-	// 		else productWallet.decrement('amount', -amount)
-	// 	}else{
-	// 		productWallet.set('amount', 0)
-	// 	}
-	// 	await productWallet.save()
-	// }
-	/**
-	 * @param {Object} obj
-	 * @param {Parse.User} obj.user
-	 * @param {string} obj.objectId
-	 * @param {number} obj.amount 
-	 */
-	async getPayLink({user, objectId, amount}) {
-		const cartId = objectId
-		const cart = await new Parse.Query(Cart).equalTo('objectId', cartId).first()
-		if(!cart) throw new Error('Cart not found')
-		
-		{
-			const cartItem = new CartItem()
-			cartItem.set('cart', cart)
-			cartItem.set('product', await new Parse.Query(Product).equalTo('productId', 'coin').first() )
-			cartItem.set('amount', 60)
-			cart.add('cartItems', cartItem)
-		}
-		// {
-		//   const cartItem = new CartItem
-		//   cartItem.set('cart', cart)
-		//   cartItem.set('product', await new Parse.Query(Product).equalTo('productId', 'fullmap1h').first() )
-		//   cartItem.set('amount', 2)
-		//   cart.addUnique('cartItems', cartItem)
-		// }
+    // 	let productWallet = await new Parse.Query(Wallet)
+    // 		.equalTo('user', user)
+    // 		.equalTo('product', product)
+    // 		.first();
 
-		await cart.save()
+    // 	if(!productWallet) {
+    // 		productWallet = new Wallet()
+    // 		productWallet.set('user', user)
+    // 		productWallet.set('product', product)
+    // 		productWallet.set('amount', 0)
+    // 	}
+    // 	if(productWallet.get('amount') + amount > 0){
+    // 		if(amount > 0) productWallet.increment('amount', amount)
+    // 		else productWallet.decrement('amount', -amount)
+    // 	}else{
+    // 		productWallet.set('amount', 0)
+    // 	}
+    // 	await productWallet.save()
+    // }
+    /**
+     * @param {Object} obj
+     * @param {Parse.User} obj.user
+     * @param {string} obj.objectId
+     * @param {number} obj.amount
+     */
+    async getPayLink({ user, objectId, amount }: { user: Parse.User; objectId: string; amount: number }) {
+        const cartId = objectId;
+        const cart = await new Parse.Query(Cart).equalTo('objectId', cartId).first();
+        if (!cart) throw new Error('Cart not found');
 
-		console.log(cart)
-	}
-	// async addPlan(user, name, duration, remaining) {
-	// 	const availableNames = ['spect1x','spect4x','spect16x']
-	// 	if(!name) throw new Error(`Name "${name}" is not specified`)
-	// 	if(!availableNames.includes(name)) throw new Error(`Name "${name}" is not available`)
-	// 	{
-	// 		const plan = new Plan()
-	// 		plan.init()
-	// 		plan.set('user', user)
-	// 		plan.set('duration', duration)
-	// 		plan.set('remaining', remaining)
-	// 		plan.set('name', name)
-	// 		plan.start()
-	// 		plan.save()
-	// 	}
+        {
+            const cartItem = new CartItem();
+            cartItem.set('cart', cart);
+            cartItem.set('product', await new Parse.Query(Product).equalTo('productId', 'coin').first());
+            cartItem.set('amount', 60);
+            cart.add('cartItems', cartItem);
+        }
+        // {
+        //   const cartItem = new CartItem
+        //   cartItem.set('cart', cart)
+        //   cartItem.set('product', await new Parse.Query(Product).equalTo('productId', 'fullmap1h').first() )
+        //   cartItem.set('amount', 2)
+        //   cart.addUnique('cartItems', cartItem)
+        // }
 
-	// }
-	/**
-	 * @param {Parse.User} user
-	 */
-	async getPlans(user) {
-		const response = 
-			await new Parse.Query(Plan)
-				.select('name','ds','de','dr')
-				.equalTo('user', user)
-				.find()
+        await cart.save();
 
-		return response.map(plan => {
-			return {
-				name: plan.get('name'),
-				duration: plan.getDurationLeft(),
-				remaining: plan.getRemainingLeft(),
-			}
-		})
-	}
-	async createUserSubscription(userId, subscriptionId) {
-		const subscription = 
-			await new Parse.Query(Subscription)
-			.equalTo('objectId', subscriptionId)
-			.first({useMasterKey: true})
-		if(!subscription) throw new Error(`Subscription ${subscriptionId} not found`)
+        console.log(cart);
+    }
+    // async addPlan(user, name, duration, remaining) {
+    // 	const availableNames = ['spect1x','spect4x','spect16x']
+    // 	if(!name) throw new Error(`Name "${name}" is not specified`)
+    // 	if(!availableNames.includes(name)) throw new Error(`Name "${name}" is not available`)
+    // 	{
+    // 		const plan = new Plan()
+    // 		plan.init()
+    // 		plan.set('user', user)
+    // 		plan.set('duration', duration)
+    // 		plan.set('remaining', remaining)
+    // 		plan.set('name', name)
+    // 		plan.start()
+    // 		plan.save()
+    // 	}
 
-		const user = 
-			await new Parse.Query(Parse.User)
-			.equalTo('objectId', userId)
-			.first({useMasterKey: true})
-		if(!user) throw new Error(`User ${userId} not found`)
+    // }
+    /**
+     * @param {Parse.User} user
+     */
+    async getPlans(user: Parse.User) {
+        const response = await new Parse.Query(Plan).select('name', 'ds', 'de', 'dr').equalTo('user', user).find();
 
-		const userSubscription = UserSubscription.createRecord(user, subscription)
-		return await userSubscription.save({}, {useMasterKey: true})
-	}
-	async usePlan(user, planName) {
-		const availableNames = ['spect1x','spect4x','spect16x']
-		if(!availableNames.includes(planName)) throw new Error(`Name "${planName}" is not available`)
-		/**
-		 * Поиск имени плана пользователя
-		 * Проверка возможности продления плана
-		 * Поиск актуальной подписки пользователя
-		 * Активация плана
-		 */
-		let plan = await Plan.getUserPlanByName(user, planName)
-		if(!plan) {
-			try{
-				plan = Plan.createRecord(user, planName)
-			}catch(e){
-				throw new Error(`Plan "${planName}" not found`)
-			}
-			
-		}
+        return response.map((plan) => {
+            return {
+                name: plan.get('name'),
+                duration: plan.getDurationLeft(),
+                remaining: plan.getRemainingLeft()
+            };
+        });
+    }
+    async createUserSubscription(userId: string, subscriptionId: string) {
+        const subscription = await new Parse.Query(Subscription)
+            .equalTo('objectId', subscriptionId)
+            .first({ useMasterKey: true });
+        if (!subscription) throw new Error(`Subscription ${subscriptionId} not found`);
 
-		if(plan.getRemainingLeft() != 0) throw new Error(`Remaining is not ready.${plan.getDurationLeft() != 0?' Aslo error request':''}`)
-		if(plan.getDurationLeft() != 0) throw new Error('Plan is not expired')
-			
+        const user = await new Parse.Query(Parse.User).equalTo('objectId', userId).first({ useMasterKey: true });
+        if (!user) throw new Error(`User ${userId} not found`);
 
-		const activeUserSubscription = 
-			await new Parse.Query(UserSubscription)
-				.equalTo('user', user)
-				.greaterThanOrEqualTo('de', new Date())
-				.include('sp')
-				.first()
-		if(!activeUserSubscription) throw new Error('No active subscriptions')
- 
-		/**@type {Subscription} */
-		const sp = activeUserSubscription.get('sp')
-		if(!sp) throw new Error('No attached sp (Subscription) in UserSubscription')
-		const quotas = sp.get('quotas')
-		if(!quotas) throw new Error('No attached quotas in Subscription')
-		if(!quotas[planName]) throw new Error(`No quota for plan name "${planName}"`)
-		plan.setDuration(quotas[planName].duration)
-		plan.setRemaining(quotas[planName].remaining)
-		plan.start()
-		plan.save()
-		
+        const userSubscription = UserSubscription.createRecord(user, subscription);
+        await userSubscription.save({}, { useMasterKey: true });
+        return;
+    }
+    async usePlan(user: Parse.User, planName: string) {
+        const availableNames = ['spect1x', 'spect4x', 'spect16x'];
+        if (!availableNames.includes(planName)) throw new Error(`Name "${planName}" is not available`);
+        /**
+         * Поиск имени плана пользователя
+         * Проверка возможности продления плана
+         * Поиск актуальной подписки пользователя
+         * Активация плана
+         */
+        let plan = await Plan.getUserPlanByName(user, planName);
+        if (!plan) {
+            try {
+                plan = Plan.createRecord(user, planName);
+            } catch (e) {
+                throw new Error(`Plan "${planName}" not found`);
+            }
+        }
 
-	}
+        if (plan.getRemainingLeft() != 0)
+            throw new Error(`Remaining is not ready.${plan.getDurationLeft() != 0 ? ' Aslo error request' : ''}`);
+        if (plan.getDurationLeft() != 0) throw new Error('Plan is not expired');
+
+        const activeUserSubscription = await new Parse.Query(UserSubscription)
+            .equalTo('user', user)
+            .greaterThanOrEqualTo('de', new Date())
+            .include('sp')
+            .first();
+        if (!activeUserSubscription) throw new Error('No active subscriptions');
+
+        /**@type {Subscription} */
+        const sp = activeUserSubscription.get('sp');
+        if (!sp) throw new Error('No attached sp (Subscription) in UserSubscription');
+        const quotas = sp.get('quotas');
+        if (!quotas) throw new Error('No attached quotas in Subscription');
+        if (!quotas[planName]) throw new Error(`No quota for plan name "${planName}"`);
+        plan.setDuration(quotas[planName].duration);
+        plan.setRemaining(quotas[planName].remaining);
+        plan.start();
+        plan.save();
+    }
 }
-  new UserWallet(null)
+new UserWallet(null);
 
 // Parse.Cloud.run('addProduct',{
 //     productId: 'kqslinYkDw',
@@ -252,7 +261,6 @@ class UserWallet {
 //     this.balance -= amount;
 //   }
 
-
 // Parse.masterKey = 'masterkey'
 // await (new Parse.Query('Wallet')).aggregate([
 //         { $match: { _p_product:  "Product$3xJ1KfMh9Z" }},
@@ -260,10 +268,8 @@ class UserWallet {
 //         { $project: { _id: 0 , product: 0, user: 0} }
 // 			], { useMasterKey: true })
 
-
 // var visitQuery = new Parse.Query('Visit');
 // visitQuery.equalTo('user', { "__type": "Pointer", "className": "_User", "objectId": userId });
 // return visitQuery.find();
-
 
 // Parse.Cloud.run('createUserSubscription',{userId:'voIMN6K8DY', planId:'YoDd23kOy3'})

@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "es2022",
         "module": "node16",
-        "moduleResolution": "Node",
+        "moduleResolution": "Node16",
         "outDir": "dist",
         "allowSyntheticDefaultImports": true,
         "sourceMap": true,
@@ -11,6 +11,8 @@
         "resolveJsonModule": true,
         "allowJs": true,
         "esModuleInterop": true,
+        "strict": false,
+        "useDefineForClassFields": false
     },
     "include": ["./src/**/*.ts", "./**/*.js"]
 }
