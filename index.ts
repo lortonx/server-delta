@@ -89,13 +89,13 @@ const config = {
 
 const parseServer = ParseServer(config);
 
-const parseGraphQLServer = new ParseGraphQLServer(parseServer, {
-    graphQLPath: '/graphql',
-    playgroundPath: '/playground',
-    graphQLCustomTypeDefs: gql`
-        ${fs.readFileSync('./src/cloud/schema.graphql')}
-    `
-});
+// const parseGraphQLServer = new ParseGraphQLServer(parseServer, {
+//     graphQLPath: '/graphql',
+//     playgroundPath: '/playground',
+//     graphQLCustomTypeDefs: gql`
+//         ${fs.readFileSync('./src/cloud/schema.graphql')}
+//     `
+// });
 
 /**
  * Parse govnocode fix
