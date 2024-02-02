@@ -57,6 +57,18 @@ Parse.Cloud.define('GoogleToken', async (request) => {
 function escapeRegExp(string: string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
+(async () => {
+    debugger;
+    const alreadyInDatabase = await new Parse.Query('_User').aggregate(
+        [
+            // @ts-ignore
+            { $match: { username: { $regex: `^${res.given_name}_` } } }, // @ts-ignore
+            { $group: { _id: null, total: { $sum: 1 } } }, // @ts-ignore
+            { $project: { _id: 0 } }
+        ] /*,{ useMasterKey: true }*/
+    );
+    console.log(alreadyInDatabase);
+})();
 
 Parse.Cloud.beforeSave<User>('_User', async (data) => {
     const user = data.object;

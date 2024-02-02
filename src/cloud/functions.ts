@@ -44,21 +44,46 @@ Parse.Cloud.beforeSave('_User', async function (data) {
             const req = await fetch(
                 `https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${data.object.attributes.authData.google.id_token}`
             );
-            /** @type {{sub: string, email: string, name: string, given_name: string, family_name: string, locale: string, picture: string, verified_email: boolean}} */
-            const res = await req.json();
+            const res: {
+                sub: string;
+                email: string;
+                name: string;
+                given_name: string;
+                family_name: string;
+                locale: string;
+                picture: string;
+                verified_email: boolean;
+            } = await req.json();
 
             Parse.masterKey = process.env.MASTER_KEY;
-            const alreadyInDatabase = await new Parse.Query('_User').aggregate(
-                [
-                    // @ts-ignore
-                    { $match: { username: { $regex: `^${res.given_name}_` } } }, // @ts-ignore
-                    { $group: { _id: null, total: { $sum: 1 } } }, // @ts-ignore
-                    { $project: { _id: 0 } }
-                ] /*,{ useMasterKey: true }*/
-            );
 
-            const login_counter = alreadyInDatabase[0]?.total || 0;
-            user.set('username', res.given_name + '_' + (login_counter + 1));
+            /** Приставка */
+            let number = -1;
+            for (let limit = 20; limit--; ) {
+                // Ищем свежайшего юзера без приставочки или с ней
+                const result: any[] = await new Parse.Query('_User').aggregate([
+                    // @ts-ignore
+                    { $match: { username: { $regex: `^${res.given_name}_${number == -1 ? '' : number}` } } }, // @ts-ignore
+                    { $sort: { _updated_at: -1 } }, // @ts-ignore
+                    { $limit: 1 }
+                ]);
+
+                const r = result[0];
+                if (r) {
+                    // Если есть, то увеличиваем номер и проверяем снова
+                    const username = r.username.split('_');
+                    number = parseInt(username.at(-1)) + 1;
+                } else if (number == -1) {
+                    // Если ни пользователя ни приставки нет, то приставка 0
+                    number = 0;
+                    break;
+                } else {
+                    // Если нашли пустой слот для приставки, то выходим
+                    break;
+                }
+            }
+
+            user.set('username', res.given_name + '_' + number);
             user.set('first_name', res.given_name);
             user.set('last_name', res.family_name);
             user.set('email', res.email);
