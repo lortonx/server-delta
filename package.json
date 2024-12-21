@@ -20,13 +20,15 @@
         "coverage": "nyc jasmine",
         "prettier": "prettier --write '{cloud,spec}/{**/*,*}.js' 'index.js'",
         "watch": "babel-watch index.js",
-        "tunnel": "ssh -R 80:localhost:1337 nokey@localhost.run"
+        "tunnel": "ssh -R 80:localhost:1337 nokey@localhost.run",
+        "devAccs": "nodemon ./src/utils/AgarAuth.ts --inspect=9032"
     },
     "dependencies": {
         "@types/parse": "^3.0.4",
         "@typescript-eslint/eslint-plugin": "^6.6.0",
         "@typescript-eslint/parser": "^6.6.0",
         "axios": "^0.27.2",
+        "cheerio": "^1.0.0-rc.12",
         "cors": "^2.8.5",
         "crypto-js": "^4.2.0",
         "dotenv": "^16.0.0",
