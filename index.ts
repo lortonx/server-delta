@@ -189,7 +189,7 @@ const parseLiveQueryServer = ParseServer.createLiveQueryServer(httpServer);
             return undefined;
         }
     };
-    const dashboard = ParseDashboard(config);
+    const dashboard = ParseDashboard(config, { allowInsecureHTTP: true });
     app.use('/dashboard', dashboard);
 }
 
