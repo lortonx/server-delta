@@ -151,7 +151,7 @@ const parseLiveQueryServer = ParseServer.createLiveQueryServer(httpServer);
             }
         ],
         trustProxy: 1,
-        allowInsecureHTTP: false,
+        allowInsecureHTTP: true,
         get users() {
             const users = [
                 {
