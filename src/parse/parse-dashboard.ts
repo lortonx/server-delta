@@ -23,8 +23,8 @@ const dashboardConfig = {
 };
 
 const dashboardOptions = {
+    allowInsecureHTTP: true,
     options: {
-        allowInsecureHTTP: true,
         cookieSessionSecret: config.DASHBOARD_SECRET
     }
 };
