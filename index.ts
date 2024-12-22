@@ -2,7 +2,7 @@
 import dotenv from 'dotenv';
 Object.assign(process.env, dotenv.config().parsed);
 import gpl, { gql } from 'graphql-tag';
-import path from 'path';
+import path, { join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import http from 'http';
@@ -13,6 +13,30 @@ import express from 'express';
 import { ParseServer, ParseGraphQLServer } from 'parse-server';
 import ParseDashboard from 'parse-dashboard';
 import BMC from './Payments/BMC';
+
+import WebSocket from 'ws';
+import inspector from 'inspector';
+import { fork } from 'child_process';
+
+function runDebuggerProcess() {
+    if (process.debugPort) {
+        !inspector.url() && inspector.open(process.debugPort || 7071);
+        const forwaredArgs = process.argv.filter((a) => a.includes('--'));
+        const child = fork(join(__dirname, 'src/utils/DebuggerWSProxy'), [
+            // '-r',
+            // 'ts-node/register',
+            '--debugger-url=' + inspector.url(),
+            ...forwaredArgs
+        ]);
+        process.on('exit', () => {
+            try {
+                child.kill();
+            } catch (e) {}
+        });
+    }
+}
+
+runDebuggerProcess();
 
 const args = process.argv || [];
 const test = args.some((arg) => arg.includes('jasmine'));
