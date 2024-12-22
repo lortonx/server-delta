@@ -2,7 +2,6 @@ import config from './config';
 import ParseDashboard from 'parse-dashboard';
 
 const dashboardConfig = {
-    allowInsecureHTTP: true,
     apps: [
         {
             appId: config.APP_ID,
@@ -24,7 +23,7 @@ const dashboardConfig = {
 
 const dashboardOptions = {
     options: {
-        allowInsecureHTTP: false,
+        allowInsecureHTTP: true,
         cookieSessionSecret: config.DASHBOARD_SECRET
     }
 };
