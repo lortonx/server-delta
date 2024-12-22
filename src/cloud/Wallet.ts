@@ -172,7 +172,10 @@ class UserWallet {
      * @param {Parse.User} user
      */
     async getPlans(user: Parse.User) {
-        const response = await new Parse.Query(Plan).select('name', 'ds', 'de', 'dr').equalTo('user', user).find();
+        const response = await new Parse.Query(Plan)
+            .select('name', 'ds', 'de', 'dr')
+            .equalTo('user', user)
+            .find({ useMasterKey: true });
 
         return response.map((plan) => {
             return {
@@ -213,6 +216,7 @@ class UserWallet {
             }
         }
 
+        console.log(plan.getRemainingLeft());
         if (plan.getRemainingLeft() != 0)
             throw new Error(`Remaining is not ready.${plan.getDurationLeft() != 0 ? ' Aslo error request' : ''}`);
         if (plan.getDurationLeft() != 0) throw new Error('Plan is not expired');
@@ -221,11 +225,10 @@ class UserWallet {
             .equalTo('user', user)
             .greaterThanOrEqualTo('de', new Date())
             .include('sp')
-            .first();
+            .first({ useMasterKey: true });
         if (!activeUserSubscription) throw new Error('No active subscriptions');
 
-        /**@type {Subscription} */
-        const sp = activeUserSubscription.get('sp');
+        const sp: Subscription = activeUserSubscription.get('sp');
         if (!sp) throw new Error('No attached sp (Subscription) in UserSubscription');
         const quotas = sp.get('quotas');
         if (!quotas) throw new Error('No attached quotas in Subscription');
@@ -233,7 +236,7 @@ class UserWallet {
         plan.setDuration(quotas[planName].duration);
         plan.setRemaining(quotas[planName].remaining);
         plan.start();
-        plan.save();
+        plan.save({}, { useMasterKey: true });
     }
 }
 new UserWallet(null);

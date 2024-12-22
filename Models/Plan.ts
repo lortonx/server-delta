@@ -1,6 +1,6 @@
 // План использования продукта
 
-import UserSubscription from "./UserSubscription.js"
+import UserSubscription from './UserSubscription.js';
 
 const params = {
     // /**@type {import("./Product.js")} */
@@ -22,67 +22,63 @@ const params = {
     /**@type {Date} */
     createdAt: null,
     /**@type {Date} */
-    updatedAt: null,
-}
+    updatedAt: null
+};
 const hiddenParams = {
     duration: 0,
     remaining: 0,
     sig: ''
-}
+};
 /**
  * @extends {Parse.Object<params & hiddenParams>}
  */
 export default class Plan extends Parse.Object {
     /**
-     * 
-     * @param {Parse.User} user 
+     *
+     * @param {Parse.User} user
      */
     static query(user) {
-        return new Parse.Query(Plan)
-            .select('name', 'ds', 'de', 'dr')
-            .equalTo('user', user)
+        return new Parse.Query(Plan).select('name', 'ds', 'de', 'dr').equalTo('user', user);
     }
     /**
      * @param {Parse.User} user
      * @param {'spect1x'|'spect4x'|'spect16x'} name
      */
     static createRecord(user, name) {
-        const availableNames = ['spect1x', 'spect4x', 'spect16x']
-        if (!name) throw new Error(`Name "${name}" is not specified`)
-        if (!availableNames.includes(name)) throw new Error(`Name "${name}" is not available`)
+        const availableNames = ['spect1x', 'spect4x', 'spect16x'];
+        if (!name) throw new Error(`Name "${name}" is not specified`);
+        if (!availableNames.includes(name)) throw new Error(`Name "${name}" is not available`);
         {
-            const plan = new Plan()
-            plan.init()
-            plan.set('user', user)
-            plan.set('name', name)
-            plan.setDuration(0)
-            plan.setRemaining(0)
-            plan.start()
-            return plan
+            const plan = new Plan();
+            plan.init();
+            plan.set('user', user);
+            plan.set('name', name);
+            plan.setDuration(0);
+            plan.setRemaining(0);
+            plan.start();
+            return plan;
         }
     }
     /**
-     * @param {Parse.User} user 
+     * @param {Parse.User} user
      * @param {string} name
      */
-    static async getUserPlanByName(user, name) {
-        if (!user) throw new Error('User must be set')
-        if (!name) throw new Error('Name of plan must be set')
+    static async getUserPlanByName(user, name: string) {
+        if (!user) throw new Error('User must be set');
+        if (!name) throw new Error('Name of plan must be set');
         const plan = new Parse.Query(Plan)
             .select('name', 'ds', 'de', 'dr', 'user')
             .equalTo('user', user)
             .equalTo('name', name)
-            .first()
-        return await plan
+            .first({ useMasterKey: true });
+        return plan;
     }
     /**
-     * @param {UserSubscription} userSubscription 
+     * @param {UserSubscription} userSubscription
      */
-    renewAccordingSubscription(userSubscription) {
-
-    }
+    renewAccordingSubscription(userSubscription) {}
     constructor() {
-        super('Plan', /** @type {params & hiddenParams}*/{})
+        super('Plan', /** @type {params & hiddenParams}*/ {});
         // /** @type {params & hiddenParams} */
         // this.attributes
     }
@@ -90,7 +86,7 @@ export default class Plan extends Parse.Object {
         Parse.Object.registerSubclass('Plan', this);
     }
     init() {
-        this.set(params)
+        this.set(params);
     }
     /**
      * Для верного старта необходимо установить
@@ -102,28 +98,28 @@ export default class Plan extends Parse.Object {
         // if(!(this.get('duration') > 0)) throw new Error('"duration" must be greater than 0')
         // if(!(this.get('remaining') > 0)) throw new Error('"remaining" must be greater than 0')
         // if(this.get('status') !== 'stopped') throw new Error('Plan "status" must be "stopped"')
-        if (!this.get('name')) throw new Error('Plan "name" must be set')
-        if (!this.get('user')) throw new Error('Plan "user" must be set')
+        if (!this.get('name')) throw new Error('Plan "name" must be set');
+        if (!this.get('user')) throw new Error('Plan "user" must be set');
         // this.set('status', 'started')
-        this.set('ds', new Date())
+        this.set('ds', new Date());
         // this.set('de', new Date(new Date().getTime() + (this.get('duration') * 1000)))
         // this.set('dr', new Date(new Date().getTime() + (this.get('remaining') * 1000)))
     }
     /** @returns {number} in seconds*/
     getDurationLeft() {
-        return Math.max(0, 0 | ((this.get('de').getTime() - new Date().getTime()) / 1000))
+        return Math.max(0, 0 | ((this.get('de').getTime() - new Date().getTime()) / 1000));
     }
     /** @returns {number} in seconds*/
     getRemainingLeft() {
-        return Math.max(0, 0 | ((this.get('dr').getTime() - new Date().getTime()) / 1000))
+        return Math.max(0, 0 | ((this.get('dr').getTime() - new Date().getTime()) / 1000));
     }
     /** @param {number} miliseconds*/
     setDuration(miliseconds) {
-        this.set('de', new Date(new Date().getTime() + miliseconds))
+        this.set('de', new Date(new Date().getTime() + miliseconds));
     }
-    /** @param {number} miliseconds*/1
+    /** @param {number} miliseconds*/ 1;
     setRemaining(miliseconds) {
-        this.set('dr', new Date(new Date().getTime() + miliseconds))
+        this.set('dr', new Date(new Date().getTime() + miliseconds));
     }
     // stop() {
     //     if(this.get('status') !== 'started') throw new Error('Plan "status" must be "started"')
@@ -136,13 +132,13 @@ export default class Plan extends Parse.Object {
 
 const Schema = new Parse.Schema('Plan');
 Schema.get().catch(() => {
-    Schema.addString('name')
+    Schema.addString('name');
     Schema.addIndex('name_', {
-        'name': 1
-    })
-    Schema.addPointer('user', '_User')
-    Schema.addDate('ds')
-    Schema.addDate('de')
-    Schema.addDate('dr')
-    Schema.save()
-})
+        name: 1
+    });
+    Schema.addPointer('user', '_User');
+    Schema.addDate('ds');
+    Schema.addDate('de');
+    Schema.addDate('dr');
+    Schema.save();
+});
