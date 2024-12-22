@@ -68,6 +68,7 @@ if (!databaseUri) {
 } // @ts-ignore
 // /** @typedef {import('parse-server/lib/Options/Definitions')['ParseServerOptions']} ParseServerOption */ /** @type {{ [K in keyof ParseServerOption]?: ReturnType<ParseServerOption[K]['action']> | ParseServerOption[K]['default']}} */
 const config = {
+    allowInsecureHTTP: true,
     // logLevel: 'info',
     // silent: true,
     allowOrigin: '*',
@@ -90,6 +91,7 @@ const config = {
 const parseServer = ParseServer(config);
 
 const parseGraphQLServer = new ParseGraphQLServer(parseServer, {
+    allowInsecureHTTP: true,
     graphQLPath: '/graphql',
     playgroundPath: '/playground',
     graphQLCustomTypeDefs: gql`
