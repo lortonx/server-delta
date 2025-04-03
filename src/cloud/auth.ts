@@ -100,3 +100,83 @@ Parse.Cloud.define('GoogleToken', async (request) => {
     //     return authData;
     // }
 });
+
+// Parse.Cloud.afterFind<Parse.User>(Parse.User, async (req) => {
+//     console.log('afterFind ACCOUNT 0', req);
+//     const user: Parse.User = req.user;
+
+//     // @ts-ignore
+//     const plans = req.objects;
+//     if (plans) {
+//         for (const object of plans) {
+//             object.unset('email');
+//             object.unset('first_name');
+//             object.unset('last_name');
+//             // object.attributes.email.toJSON = () => undefined;
+//             // object.attributes.first_name.toJSON = () => undefined;
+//             // object.attributes.last_name.toJSON = () => undefined;
+//             // @ts-ignore
+//             object.toJSON = () => {
+//                 const dummy = {};
+//                 const holder = new Proxy(dummy, {
+//                     get: (target, prop) => {
+//                         if (prop === 'email' || prop === 'first_name' || prop === 'last_name') {
+//                             return undefined;
+//                         }
+//                         return object[prop];
+//                     },
+//                     set: (target, prop, value) => {
+//                         object[prop] = value;
+//                         return true;
+//                     }
+//                 });
+
+//                 return holder;
+//             };
+//         }
+//     }
+//     return [...plans];
+// });
+// Parse.Cloud.afterLogin(async (req) => {
+//     console.log('afterLogin ACCOUNT 0', req);
+//     const user: Parse.User = req.user;
+//     // @ts-ignore
+//     const plans = req.objects;
+//     if (plans) {
+//         for (const object of plans) {
+//             object.unset('email');
+//             object.unset('first_name');
+//             object.unset('last_name');
+//             // object.attributes.email.toJSON = () => undefined;
+//             // object.attributes.first_name.toJSON = () => undefined;
+//             // object.attributes.last_name.toJSON = () => undefined;
+//         }
+//     }
+// });
+// Parse.Cloud.beforeFind<Parse.User>(Parse.User, async (req) => {
+//     console.log('beforeFind ACCOUNT 0', req);
+//     const user: Parse.User = req.user;
+//     // @ts-ignore
+//     // @ts-ignore
+//     const plans = req.objects;
+//     const query = req.query;
+//     query.exclude('email', 'first_name', 'last_name');
+//     query.exclude('email,first_name,last_name');
+//     query.exclude('picture');
+// });
+// // Parse.Cloud.afterSave<Parse.User>('_User', async (req) => {
+// //     console.log('afterSave ACCOUNT 0', req);
+// //     const user: Parse.User = req.user;
+// //     // @ts-ignore
+// //     const plans = req.objects;
+// //     if (plans) {
+// //         for (const object of plans) {
+// //             object.unset('email');
+// //             object.unset('first_name');
+// //             object.unset('last_name');
+// //             // object.attributes.email.toJSON = () => undefined;
+// //             // object.attributes.first_name.toJSON = () => undefined;
+// //             // object.attributes.last_name.toJSON = () => undefined;
+// //         }
+// //     }
+// // });

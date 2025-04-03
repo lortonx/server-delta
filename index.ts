@@ -56,7 +56,11 @@ app.use(
     })
 );
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(
+    cors({
+        exposedHeaders: ['access-control-expose-headers'] // Перечисление всех заголовков, которые можно читать на клиенте
+    })
+);
 
 app.post('/webhook/BmcHook/', (req, res) => {
     const BMC_WEBHOOK_SECRET = process.env.BMC_SECRET;

@@ -17,7 +17,7 @@ Parse.Cloud.define(
         // const requestId = req.functionName + req.user.id
         let all = [];
         let last_page = 1;
-        let max_page = 2;
+        const max_page = 2;
         for (let current_page = 1; current_page <= last_page; current_page++) {
             if (current_page > max_page) break;
             await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -125,8 +125,6 @@ Parse.Cloud.define(
 );
 
 Parse.Cloud.beforeFind('Plan', (req) => {
-    // console.log('beforeFind', req)
-    /** @type {Parse.Query} */
     const query = req.query;
     if (query['_select']?.includes('sig')) query.select('user', 'name');
     if (query['_select']?.includes('duration')) query.select('de');
@@ -134,10 +132,8 @@ Parse.Cloud.beforeFind('Plan', (req) => {
 }); // @ts-ignore
 
 /** Доцепляем duration, remaining, sig */ Parse.Cloud.afterLiveQueryEvent('Plan', (request) => {
-    /** @type {Plan}*/
-    const object = request.object;
-    /** @type {Parse.User}*/
-    const user = request.user;
+    const object: Plan = request.object;
+    const user: Parse.User = request.user;
     const original = request.original;
 
     object.set('duration', object.getDurationLeft());
@@ -160,8 +156,7 @@ Parse.Cloud.beforeFind('Plan', (req) => {
 
 Parse.Cloud.afterFind<Plan>('Plan', async (req) => {
     const plans = req.objects as Plan[];
-    /** @type {Parse.User} */
-    const user = req.user;
+    const user: Parse.User = req.user;
     // @ts-ignore
     const enableSignature = req.query._select?.includes('sig');
     for (const object of plans) {
